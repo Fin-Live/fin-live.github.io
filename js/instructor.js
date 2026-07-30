@@ -75,11 +75,20 @@ onAuthStateChanged(auth, (user) => {
   const ok = !!user && user.uid === INSTRUCTOR_UID;
   show(el.login, !ok);
   show(el.console, ok);
+
+  // Anyone who has opened the student page carries an anonymous session for
+  // this origin, so landing here signed-in-but-not-the-instructor is the normal
+  // case for a student, not an error. Show them a plain sign-in form.
+  if (user && !ok && !user.isAnonymous) {
+    setStatus(el.loginStatus, 'That account does not have access to this console.', 'err');
+    // The UID is what you need during setup, but it is setup detail rather than
+    // something to print on a page students can reach.
+    console.info(`Signed in as ${user.email || user.uid} (UID ${user.uid}), ` +
+      `which is not INSTRUCTOR_UID.`);
+    return;
+  }
   if (user && !ok) {
-    setStatus(el.loginStatus,
-      `Signed in as ${user.email || 'an unknown account'}, which is not the instructor account. ` +
-      `Its UID is ${user.uid} — put that in js/config.js and firestore.rules if it should be.`,
-      'err');
+    setStatus(el.loginStatus, '', '');
     return;
   }
   if (ok && !watching) {

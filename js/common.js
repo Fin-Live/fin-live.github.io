@@ -3,12 +3,29 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {
+  initializeAppCheck, ReCaptchaV3Provider,
+} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app-check.js';
+import {
   getAuth, signInAnonymously, onAuthStateChanged,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
-import { firebaseConfig } from './config.js';
+import { firebaseConfig, RECAPTCHA_SITE_KEY } from './config.js';
 
 export const app = initializeApp(firebaseConfig);
+
+// App Check attests that a request came from this actual web page, via an
+// invisible reCAPTCHA. It must run before getFirestore/getAuth so every call
+// carries a token. With no key configured it's skipped, so the app keeps
+// working while App Check is being set up -- and the switch that actually
+// rejects unattested traffic is Enforcement, flipped in the console once
+// verified requests are showing up.
+if (RECAPTCHA_SITE_KEY) {
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(RECAPTCHA_SITE_KEY),
+    isTokenAutoRefreshEnabled: true,
+  });
+}
+
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 

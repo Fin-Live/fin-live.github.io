@@ -17,3 +17,10 @@ export const firebaseConfig = {
 // The same value has to go into firestore.rules; this copy only controls what
 // the page shows you, the rules copy is what actually enforces access.
 export const INSTRUCTOR_UID = '4lb9Cnu7WIfk6hmLFCuycTzkjXG3';
+
+// App Check reCAPTCHA v3 *site* key (the public half — safe to commit; the
+// secret half stays in the Firebase console). Left blank, App Check simply
+// doesn't initialize and the app runs exactly as before. Fill it in, deploy,
+// confirm verified requests appear in the console, and only THEN turn on
+// enforcement — see the setup notes in the README.
+export const RECAPTCHA_SITE_KEY = '';

@@ -1,0 +1,131 @@
+rules_version = '2';
+
+// Paste this whole file into: Firebase console -> Firestore Database -> Rules.
+//
+// This is where the real security lives. The values in js/config.js are public
+// identifiers, not secrets; every rule that matters is enforced here, on the
+// server, where a student cannot reach it from the browser console.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- your instructor UID (Authentication -> Users) ----
+    function instructorUid() {
+      return '4lb9Cnu7WIfk6hmLFCuycTzkjXG3';
+    }
+
+    function isInstructor() {
+      return request.auth != null && request.auth.uid == instructorUid();
+    }
+
+    // Students are signed in anonymously, so they do have an auth token --
+    // it just isn't tied to a person. It gives each browser a stable uid.
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // The question currently on screen. Students listen to this one document.
+    match /state/current {
+      allow read: if signedIn();
+      allow write: if isInstructor();
+    }
+
+    // Per-student secret codes, one document per code. Deliberately unreadable
+    // by students: the membership check below happens inside the rules, so the
+    // list can be validated without ever being exposed.
+    match /roster/{code} {
+      allow read, write: if isInstructor();
+    }
+
+    // Top level, because both responses and asked questions validate against it.
+    function onRoster(code) {
+      return exists(/databases/$(database)/documents/roster/$(code));
+    }
+
+    // Lets the instructor's CSV export pull every response in one query.
+    match /{path=**}/responses/{key} {
+      allow read: if isInstructor();
+    }
+
+    match /questions/{qid} {
+      allow read: if signedIn();
+      allow write: if isInstructor();
+
+      function q() {
+        return get(/databases/$(database)/documents/questions/$(qid)).data;
+      }
+
+      // The deadline check. request.time is the server's clock, and openedAt
+      // was written with serverTimestamp(), so a student's own clock never
+      // enters into it. Repeated get() calls to the same path are billed once.
+      function stillOpen() {
+        return !('closedAt' in q())
+          && request.time < q().openedAt + duration.value(q().windowSeconds, 's');
+      }
+
+      function devicePath() {
+        return /databases/$(database)/documents/questions/$(qid)/devices/$(request.auth.uid);
+      }
+
+      // One histogram entry per device. The first response key a device uses
+      // for this question is recorded, and that device may then only rewrite
+      // that same key -- so a student can change their mind before the poll
+      // closes, but cannot vote once with their code and once anonymously.
+      function devicePinnedTo(key) {
+        return !exists(devicePath()) || get(devicePath()).data.responseKey == key;
+      }
+
+      match /devices/{deviceUid} {
+        allow read: if isInstructor();
+        allow write: if signedIn() && deviceUid == request.auth.uid;
+      }
+
+      match /responses/{key} {
+        allow read, delete: if isInstructor();
+
+        allow create, update: if signedIn()
+          && stillOpen()
+          && devicePinnedTo(key)
+          && request.resource.data.deviceUid == request.auth.uid
+          && (
+            // Anonymous: keyed by device, counted but not recorded.
+            (request.resource.data.studentCode == null
+              && key == 'anon_' + request.auth.uid)
+            ||
+            // Identified: keyed by the code, which must be on the roster.
+            (request.resource.data.studentCode is string
+              && key == 'id_' + request.resource.data.studentCode
+              && onRoster(request.resource.data.studentCode))
+          );
+      }
+    }
+
+    // Questions students submit to the instructor.
+    //
+    // Every optional field is guarded with `in` before being read. Reading a
+    // key that isn't in the document is an error in rules, not a null, and an
+    // error denies the write -- so a student running a cached older version of
+    // the page, which sends fewer fields, would be silently locked out.
+    match /asked/{id} {
+      allow create: if signedIn()
+        && request.resource.data.deviceUid == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 1000
+        // A name, if given at all, must be a short string.
+        && (!('firstName' in request.resource.data)
+          || request.resource.data.firstName == null
+          || (request.resource.data.firstName is string
+            && request.resource.data.firstName.size() <= 40))
+        // A code, if given at all, must be one we issued. No code means the
+        // question is anonymous -- and the console shows any question without
+        // a code as "anonymous" regardless of what name came with it, so a
+        // name alone can never impersonate anyone.
+        && (!('studentCode' in request.resource.data)
+          || request.resource.data.studentCode == null
+          || (request.resource.data.studentCode is string
+            && onRoster(request.resource.data.studentCode)));
+      allow read, update, delete: if isInstructor();
+    }
+  }
+}

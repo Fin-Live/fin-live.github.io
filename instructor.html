@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instructor console</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+  <h1>Instructor console</h1>
+
+  <section class="panel" id="login">
+    <h2>Sign in</h2>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username">
+    <label for="password" style="margin-top:.6rem">Password</label>
+    <input id="password" type="password" autocomplete="current-password">
+    <div class="row" style="margin-top:.7rem">
+      <button id="login-btn" type="button">Sign in</button>
+    </div>
+    <p id="login-status" class="status"></p>
+  </section>
+
+  <div id="console" hidden>
+    <p class="row muted" style="justify-content:space-between">
+      <span id="who"></span>
+      <button id="sign-out" class="secondary" type="button">Sign out</button>
+    </p>
+
+    <section class="panel">
+      <h2>Launch a question</h2>
+      <div class="row">
+        <div class="grow">
+          <label for="lecture">Lecture</label>
+          <input id="lecture" autocomplete="off" placeholder="Lecture 3">
+        </div>
+        <div class="grow">
+          <label for="label">Question</label>
+          <input id="label" autocomplete="off" placeholder="Q1">
+        </div>
+      </div>
+      <div class="row" style="margin-top:.6rem">
+        <div class="grow">
+          <label for="type">Answer type</label>
+          <select id="type">
+            <option value="choice">Multiple choice</option>
+            <option value="numeric">Numeric</option>
+          </select>
+        </div>
+        <div class="grow" id="num-options-wrap">
+          <label for="num-options">Options</label>
+          <select id="num-options">
+            <option>2</option><option>3</option>
+            <option selected>4</option><option>5</option>
+          </select>
+        </div>
+        <div class="grow">
+          <label for="window">Closes after</label>
+          <select id="window">
+            <option value="10">10 seconds</option>
+            <option value="20" selected>20 seconds</option>
+            <option value="30">30 seconds</option>
+            <option value="60">60 seconds</option>
+            <option value="86400">stays open until I close it</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-top:.7rem">
+        <button id="launch" type="button">Launch</button>
+      </div>
+      <p id="launch-status" class="status"></p>
+      <p class="muted">The question number bumps itself after each launch, so re-asking
+        the same question for a second round is one click.</p>
+    </section>
+
+    <section class="panel" id="live" hidden>
+      <div class="row" style="justify-content:space-between">
+        <h2 id="live-title" style="margin:0"></h2>
+        <span id="countdown" class="countdown"></span>
+      </div>
+      <div class="row" style="margin-top:.5rem">
+        <button id="close-now" class="secondary" type="button">Close now</button>
+        <button id="reveal" type="button">Show on projector</button>
+        <span class="muted"><strong id="total">0</strong> responses ·
+          <strong id="identified">0</strong> with a code</span>
+      </div>
+      <p id="reveal-state" class="muted"></p>
+      <div id="hist" class="hist"></div>
+      <p class="muted">This panel is yours alone. The room sees
+        <a href="display.html" target="_blank">the projector view</a>, and only
+        once you reveal it.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Questions from students</h2>
+      <div id="feed" class="feed"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Records</h2>
+      <p class="muted">Nothing is ever deleted, so each of these is the complete
+        record to date — download whenever you like.</p>
+      <p class="records-label">Participation — one row per student, one column
+        per lecture</p>
+      <div class="row">
+        <button id="export-answers" type="button">Answers by lecture</button>
+        <button id="export-asks" type="button">Questions by lecture</button>
+      </div>
+
+      <p class="records-label">Full detail — one row per event</p>
+      <div class="row">
+        <button id="export" class="secondary" type="button">All responses</button>
+        <button id="export-questions" class="secondary" type="button">All questions</button>
+      </div>
+
+      <p id="export-status" class="status"></p>
+      <p class="muted">The two participation sheets count only activity tied to a
+        code. Anonymous answers and questions are in the full-detail files but
+        can't be credited to anyone.</p>
+      <p><a href="codes.html">Manage student codes</a></p>
+    </section>
+  </div>
+</main>
+
+<script type="module" src="js/instructor.js"></script>
+</body>
+</html>

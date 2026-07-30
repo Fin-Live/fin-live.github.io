@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Results</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<!--
+  The projected view. Everything on it has to be legible from the back row, so
+  type scales with the viewport rather than sitting at a fixed size, and there
+  is no chrome competing with the bars.
+
+  It deliberately shows nothing but a response count until you press "Show on
+  projector" in the cockpit. A tally the room can watch while the poll is still
+  open pulls late answers toward whichever bar is winning.
+-->
+<body class="display">
+
+<div id="login" class="panel login-card">
+  <h2>Projector view</h2>
+  <p class="muted">Sign in with your instructor account. Normally you won't see
+    this — open this page in the same browser as the console and it inherits
+    that session.</p>
+  <label for="email">Email</label>
+  <input id="email" type="email" autocomplete="username">
+  <label for="password" style="margin-top:.6rem">Password</label>
+  <input id="password" type="password" autocomplete="current-password">
+  <div class="row" style="margin-top:.7rem">
+    <button id="login-btn" type="button">Sign in</button>
+  </div>
+  <p id="login-status" class="status"></p>
+</div>
+
+<main id="stage" class="stage" hidden>
+  <header class="stage-head">
+    <span id="title" class="stage-title"></span>
+    <span id="meta" class="stage-meta"></span>
+  </header>
+
+  <!-- Holding state: participation is visible, distribution is not. -->
+  <section id="holding" class="holding" hidden>
+    <p id="holding-count" class="holding-count">0</p>
+    <p class="holding-label">responses</p>
+  </section>
+
+  <section id="results" class="dhist" hidden></section>
+
+  <p id="idle" class="holding-label idle-note" hidden>Waiting for the next question</p>
+</main>
+
+<button id="fullscreen" class="fs-btn" type="button" title="Fullscreen" hidden>⛶</button>
+
+<script type="module" src="js/display.js"></script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+:root {
+  --bg: #ffffff;
+  --panel: #f6f7f9;
+  --ink: #16181d;
+  --muted: #6b7280;
+  --line: #dfe3e8;
+  --accent: #2f5fd8;
+  --accent-ink: #ffffff;
+  --ok: #1a7f52;
+  --warn: #b4541a;
+  --err: #b3261e;
+  --bar: #2f5fd8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14161a;
+    --panel: #1d2026;
+    --ink: #e9ebef;
+    --muted: #9aa1ad;
+    --line: #2e333c;
+    --accent: #6b93f5;
+    --accent-ink: #10131a;
+    --ok: #5fd39b;
+    --warn: #e8a25f;
+    --err: #f28b82;
+    --bar: #6b93f5;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 1.25rem;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+main { max-width: 46rem; margin: 0 auto; }
+
+h1 { font-size: 1.25rem; margin: 0 0 1rem; }
+h2 { font-size: 1rem; margin: 0 0 .6rem; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.muted { color: var(--muted); font-size: .875rem; }
+.row { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.grow { flex: 1 1 8rem; }
+
+label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: .25rem; }
+
+input, select, textarea, button {
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: .6rem .7rem;
+}
+
+input, select, textarea { width: 100%; }
+textarea { resize: vertical; min-height: 5rem; }
+
+button {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: transparent;
+  font-weight: 600;
+  cursor: pointer;
+  width: auto;
+  /* comfortable tap target on a phone in a lecture hall */
+  min-height: 2.75rem;
+  padding-inline: 1rem;
+}
+
+button.secondary { background: var(--bg); color: var(--ink); border-color: var(--line); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Answer buttons: big, few per row, thumb-reachable. min-width:0 lets a column
+   shrink below the button's natural width instead of overflowing the page. */
+.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr)); gap: .6rem; }
+.choices button { font-size: 1.5rem; min-height: 4rem; min-width: 0; padding-inline: 0; }
+
+.countdown { font-variant-numeric: tabular-nums; font-size: 2rem; font-weight: 700; }
+.countdown.low { color: var(--warn); }
+
+.status { font-size: .875rem; min-height: 1.5rem; margin: .5rem 0 0; }
+.status.ok { color: var(--ok); }
+.status.err { color: var(--err); }
+.status.warn { color: var(--warn); }
+
+/* Histogram */
+.hist { display: grid; gap: .4rem; margin-top: .5rem; }
+.hist-row { display: grid; grid-template-columns: 4.5rem 1fr 3.5rem; gap: .5rem; align-items: center; }
+.hist-key { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.hist-track { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; height: 1.6rem; }
+.hist-fill { background: var(--bar); height: 100%; transition: width .25s ease; }
+.hist-count { font-variant-numeric: tabular-nums; color: var(--muted); }
+
+.feed { display: grid; gap: .5rem; max-height: 22rem; overflow-y: auto; }
+.feed-item { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: .6rem .7rem; }
+.feed-item p { margin: 0 0 .3rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+th, td { text-align: left; padding: .4rem .5rem; border-bottom: 1px solid var(--line); }
+
+code { background: var(--panel); padding: .1rem .3rem; border-radius: 4px; }
+
+[hidden] { display: none !important; }
+
+/* ------------------------------------------------------------- student page
+
+   Tuned so that on the smallest phone still in circulation the answer buttons
+   sit on the first screen without scrolling. Anything that would push them
+   down — a heading, an open text box, a results panel — is either removed or
+   collapsed behind a tap. */
+
+body.student { padding: .9rem; }
+body.student main { max-width: 30rem; }
+
+.idbar { margin-bottom: .9rem; }
+
+/* Checkbox and its label on one line. Not scoped to a parent — the identity bar
+   and the ask form both use it, and nowrap stops the long label from being
+   bumped below the box. */
+.check {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: .55rem;
+  align-items: flex-start;
+  margin: .6rem 0 0;
+}
+.check input {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  min-height: auto;
+  margin-top: .15rem;
+}
+.check label { flex: 1 1 0; margin: 0; font-size: .875rem; color: var(--ink); }
+
+button.link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  padding: .25rem;
+  min-height: auto;
+  text-decoration: underline;
+}
+
+button.wide { width: 100%; }
+
+/* The between-questions state. No border, no panel, nothing to read twice. */
+.quiet { text-align: center; color: var(--muted); padding: 2.5rem 1rem; }
+.quiet p { margin: .3rem 0; }
+
+.confirm {
+  text-align: center;
+  padding: 2rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.confirm .tick { font-size: 3.5rem; line-height: 1; color: var(--ok); margin: 0 0 .5rem; }
+.confirm p { margin: .3rem 0; }
+.confirm p:nth-child(2) { font-size: 1.25rem; font-weight: 600; }
+
+#choices, #numeric { margin-top: .8rem; }
+#ask-section { margin-top: 1.25rem; }
+
+.revealed { color: var(--warn) !important; font-weight: 600; }
+
+/* Anonymous askers read as muted so named ones stand out in the feed. */
+.feed-item .anon { color: var(--muted); font-weight: 600; }
+.records-label {
+  margin: 1rem 0 .4rem;
+  font-size: .8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.records-label:first-of-type { margin-top: .6rem; }
+
+/* ----------------------------------------------------------- projector view
+
+   Sized in vw/vh rather than px: the same page has to read from the back of a
+   lecture hall on whatever resolution the room's projector happens to be. */
+
+body.display { padding: 0; height: 100vh; overflow: hidden; }
+
+.login-card { max-width: 26rem; margin: 4rem auto; }
+
+.stage {
+  height: 100vh;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3vh 5vw;
+  gap: 3vh;
+}
+
+.stage-head { display: flex; justify-content: space-between; align-items: baseline; gap: 2vw; }
+.stage-title { font-size: clamp(1.5rem, 3.5vw, 3.5rem); font-weight: 700; }
+.stage-meta {
+  font-size: clamp(1.25rem, 3vw, 3rem);
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.stage-meta.low { color: var(--warn); }
+
+/* Holding state: participation visible, distribution not. */
+.holding { text-align: center; }
+.holding-count {
+  font-size: clamp(5rem, 22vh, 16rem);
+  font-weight: 800;
+  line-height: 1;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.holding-label {
+  font-size: clamp(1.25rem, 3vw, 2.5rem);
+  color: var(--muted);
+  margin: .5rem 0 0;
+  text-align: center;
+}
+.idle-note { margin: auto; }
+
+/* One grid for the whole chart, with rows as `display: contents`, so every bar
+   shares the same column widths. Per-row grids would let a short "5%" pull that
+   row's track wider than the others, and misaligned bar ends read as sloppy
+   from the back of the room. */
+.dhist {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 2vh 2vw;
+  align-items: center;
+}
+.dhist-row { display: contents; }
+.dhist-key {
+  font-size: clamp(2rem, 6vh, 5rem);
+  font-weight: 800;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.dhist-track {
+  background: var(--panel);
+  border-radius: .5vh;
+  height: clamp(2.5rem, 9vh, 7rem);
+  overflow: hidden;
+}
+.dhist-fill { display: block; background: var(--bar); height: 100%; transition: width .35s ease; }
+.dhist-count {
+  font-size: clamp(1.5rem, 4.5vh, 3.5rem);
+  font-weight: 700;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stays out of the way until the pointer finds it. */
+.fs-btn {
+  position: fixed;
+  top: 1vh; right: 1vw;
+  background: none;
+  color: var(--muted);
+  border: none;
+  font-size: 1.5rem;
+  opacity: .12;
+  min-height: auto;
+  transition: opacity .2s;
+}
+.fs-btn:hover { opacity: 1; }
+
+/* Phones: two big square-ish targets per row rather than a thin strip of four.
+   Easier to hit with a thumb and readable at arm's length, which matters more
+   here than fitting every option on one line. */
+@media (max-width: 30rem) {
+  .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .choices button { font-size: 1.75rem; min-height: 4.5rem; }
+  .countdown { font-size: 1.5rem; }
+  .quiet { padding: 1.75rem .5rem; }
+}

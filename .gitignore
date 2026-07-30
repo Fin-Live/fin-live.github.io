@@ -1,0 +1,18 @@
+# Student codes are the only thing authenticating a student. This repo is
+# public (GitHub Pages on a free account requires it), so publishing the code
+# list would let anyone submit responses as anyone. Never commit it.
+student-codes.csv
+*.csv
+
+# Exported participation records — student responses, keep them off the web.
+responses.csv
+
+# Planning notes and private reasoning. The repo is public (Pages on a free
+# plan requires it), so anything committed here is readable by students.
+projectdescription-high-level.txt
+NOTES.md
+
+# Downloaded exports land here during testing. Student data, never published.
+created files/
+
+.DS_Store

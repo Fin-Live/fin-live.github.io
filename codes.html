@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student codes</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+  <h1>Student codes</h1>
+
+  <section class="panel" id="login">
+    <h2>Sign in</h2>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username">
+    <label for="password" style="margin-top:.6rem">Password</label>
+    <input id="password" type="password" autocomplete="current-password">
+    <div class="row" style="margin-top:.7rem">
+      <button id="login-btn" type="button">Sign in</button>
+    </div>
+    <p id="login-status" class="status"></p>
+  </section>
+
+  <div id="panel" hidden>
+    <section class="panel">
+      <h2>Generate codes</h2>
+      <p class="muted">
+        Codes on file: <strong id="existing">…</strong>. Generating adds new codes;
+        it never removes the ones already there, so codes stay valid all semester.
+      </p>
+      <div class="row" style="margin-top:.6rem">
+        <div class="grow">
+          <label for="count">How many</label>
+          <input id="count" type="number" min="1" max="500" value="60">
+        </div>
+        <button id="generate" type="button" style="align-self:flex-end">Generate &amp; download CSV</button>
+      </div>
+      <p id="status" class="status"></p>
+      <p id="preview" class="muted" style="font-family:ui-monospace,monospace;overflow-wrap:anywhere"></p>
+    </section>
+
+    <section class="panel">
+      <h2>What to do with the CSV</h2>
+      <p class="muted">
+        The database stores the codes but knows nothing about who holds them. Put the
+        downloaded codes next to your class list in your own spreadsheet, mail-merge one
+        code to each student, and keep that spreadsheet off this site. That mapping is
+        what turns the exported responses back into named participation, and it is the
+        one thing that should never leave your own machine.
+      </p>
+      <p class="row"><a href="instructor.html">Back to the console</a></p>
+    </section>
+  </div>
+</main>
+
+<script type="module" src="js/codes.js"></script>
+</body>
+</html>

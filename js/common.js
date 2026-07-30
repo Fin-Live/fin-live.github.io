@@ -99,7 +99,13 @@ function numericBins(responses, binCount) {
 
 export function downloadCsv(filename, rows) {
   const escape = (v) => {
-    const s = v === null || v === undefined ? '' : String(v);
+    let s = v === null || v === undefined ? '' : String(v);
+    // Spreadsheet formula injection: Excel and Sheets execute any cell that
+    // starts with = + - @ (or a control char) as a formula on open, so a
+    // student-controlled name or answer of "=..." could run when you open the
+    // export. Prefix a quote to neutralize it, but leave plain numbers alone so
+    // numeric answers stay numeric.
+    if (/^[=+\-@\t\r]/.test(s) && !/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) s = `'${s}`;
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const csv = rows.map((r) => r.map(escape).join(',')).join('\r\n');

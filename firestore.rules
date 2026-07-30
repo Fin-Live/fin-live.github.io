@@ -75,9 +75,23 @@ service cloud.firestore {
         return !exists(devicePath()) || get(devicePath()).data.responseKey == key;
       }
 
+      // The pin is create-once and immutable: without this a student could
+      // delete their device doc and vote again under a second key.
       match /devices/{deviceUid} {
         allow read: if isInstructor();
-        allow write: if signedIn() && deviceUid == request.auth.uid;
+        allow create: if signedIn()
+          && deviceUid == request.auth.uid
+          && request.resource.data.keys().hasOnly(['responseKey']);
+        allow update: if signedIn()
+          && deviceUid == request.auth.uid
+          && request.resource.data.responseKey == resource.data.responseKey;
+        // no delete
+      }
+
+      // An answer is a short choice string ("A".."E") or a number. Bounding it
+      // stops a student bloating their own document or smuggling a structure in.
+      function validAnswer(a) {
+        return (a is string && a.size() <= 100) || a is int || a is float;
       }
 
       match /responses/{key} {
@@ -86,7 +100,19 @@ service cloud.firestore {
         allow create, update: if signedIn()
           && stillOpen()
           && devicePinnedTo(key)
+          // Exactly the fields the client sends -- nothing extra smuggled in.
+          && request.resource.data.keys().hasOnly(
+               ['qid', 'lecture', 'label', 'answer', 'studentCode', 'deviceUid', 'submittedAt'])
           && request.resource.data.deviceUid == request.auth.uid
+          && request.resource.data.qid == qid
+          // Server clock, not the client's -- the timestamp can't be forged.
+          && request.resource.data.submittedAt == request.time
+          // Lecture and label are copied from the question, not accepted from
+          // the client, so a student can't file their answer under a different
+          // lecture to pad a participation column.
+          && request.resource.data.lecture == q().lecture
+          && request.resource.data.label == q().label
+          && validAnswer(request.resource.data.answer)
           && (
             // Anonymous: keyed by device, counted but not recorded.
             (request.resource.data.studentCode == null
@@ -102,13 +128,18 @@ service cloud.firestore {
 
     // Questions students submit to the instructor.
     //
-    // Every optional field is guarded with `in` before being read. Reading a
-    // key that isn't in the document is an error in rules, not a null, and an
-    // error denies the write -- so a student running a cached older version of
-    // the page, which sends fewer fields, would be silently locked out.
+    // Optional fields are guarded with `in` before being read: reading a key
+    // that isn't there is an error in rules, not a null, and an error denies the
+    // write -- so a student on a cached older page, which sends fewer fields, is
+    // handled rather than silently locked out.
     match /asked/{id} {
       allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(
+             ['text', 'lecture', 'studentCode', 'firstName', 'deviceUid', 'createdAt'])
         && request.resource.data.deviceUid == request.auth.uid
+        // Server clock -- the ordering that decides a student's current name
+        // can't be gamed with a forged timestamp.
+        && request.resource.data.createdAt == request.time
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0
         && request.resource.data.text.size() <= 1000

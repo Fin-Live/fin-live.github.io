@@ -135,14 +135,17 @@ el.change.addEventListener('click', () => {
 
 // A small, varied reward for answering. Picked once per question and kept
 // stable across re-renders, so it doesn't flicker or change while shown.
+//
+// Deliberately acknowledges PARTICIPATION only, never correctness -- the app
+// doesn't know if an answer is right, so nothing here ("Nice", a star, a
+// lightbulb) may imply it was.
 const REWARDS = [
-  { emoji: '🎉', head: 'Nice!' },
-  { emoji: '🙌', head: 'Answer in!' },
+  { emoji: '🎉', head: 'Answer in!' },
+  { emoji: '🙌', head: 'Got it!' },
   { emoji: '👍', head: 'Got it!' },
-  { emoji: '⭐', head: 'Thanks!' },
-  { emoji: '😊', head: 'Thanks for chiming in!' },
-  { emoji: '💡', head: 'Good thinking!' },
-  { emoji: '✅', head: 'Locked in!' },
+  { emoji: '🙏', head: 'Thanks!' },
+  { emoji: '🗳️', head: 'Answer in!' },
+  { emoji: '😊', head: 'Thanks!' },
 ];
 let reward = { qid: null, emoji: '', head: '' };
 function rewardFor(qid) {

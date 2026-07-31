@@ -233,7 +233,14 @@ async function submitAnswer(rawAnswer) {
 function explain(err, who) {
   if (err?.code !== 'permission-denied') return `Could not send: ${err?.message || err}`;
   if (!isOpen(current, clock)) return 'Too late — the poll closed before this reached the server.';
-  if (!who.anonymous) return `Code "${who.code}" was not recognised. Tap Change and check it.`;
+  // One answer per device per question. If this device already answered (which
+  // we recorded locally), a second attempt under a different identity -- code
+  // vs anonymous, or a different code -- is what got rejected, not the code.
+  if (current && answered.has(current.qid)) {
+    return 'This device already answered this question. You can change your answer, '
+      + 'but you can’t switch between a code and anonymous on the same question.';
+  }
+  if (!who.anonymous) return `Code "${who.code}" wasn’t accepted. Check it with Change, or ask your instructor.`;
   return 'This device has already answered this question.';
 }
 

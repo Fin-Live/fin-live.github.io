@@ -127,6 +127,17 @@ code { background: var(--panel); padding: .1rem .3rem; border-radius: 4px; }
 body.student { padding: .9rem; }
 body.student main { max-width: 30rem; }
 
+/* Course branding. Compact on purpose so it never pushes the answer buttons
+   off the first screen on a phone. */
+.brand {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 .8rem;
+  padding-bottom: .7rem;
+  border-bottom: 1px solid var(--line);
+}
+
 .idbar { margin-bottom: .9rem; }
 
 /* Checkbox and its label on one line. Not scoped to a parent — the identity bar

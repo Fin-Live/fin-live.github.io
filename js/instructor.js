@@ -170,9 +170,11 @@ el.closeNow.addEventListener('click', async () => {
   }
 });
 
-// Controls what the projector shows. Kept off by default and reset on every
-// launch: a live tally on a screen the room can see makes late answerers drift
-// toward whichever bar is already winning, which costs you the honest split.
+// Reveals the histogram to the room while the poll is still open (for peer
+// instruction). It shows on its own once the poll closes, so this is only for
+// showing it early. Reset on every launch so a reveal never leaks to the next
+// question -- a live tally the room can watch pulls late answers toward the
+// leading bar.
 el.reveal.addEventListener('click', async () => {
   if (!current?.qid) return;
   el.reveal.disabled = true;
@@ -227,15 +229,17 @@ function renderLive() {
   show(el.liveQtext, !!current.text);
   el.closeNow.disabled = !open;
 
-  // The projector shows results once revealed, and automatically once the poll
-  // closes. So the reveal button only matters while the poll is still open.
-  const roomSeesResults = current.revealed || !open;
-  el.reveal.textContent = current.revealed ? 'Hide from projector' : 'Show on projector';
-  el.reveal.disabled = !open; // once closed, results show automatically -- nothing to toggle
-  el.revealState.textContent = roomSeesResults
-    ? 'The room can see the results.'
-    : 'Projector shows the prompt and a response count.';
-  el.revealState.className = roomSeesResults ? 'muted revealed' : 'muted';
+  // The room sees the histogram once the poll closes, or early if you reveal it.
+  // The question prompt is always on the projector; this only controls the bars.
+  const roomSeesHistogram = current.revealed || !open;
+  el.reveal.textContent = current.revealed ? 'Hide histogram from room' : 'Reveal histogram to room';
+  el.reveal.disabled = !open; // once closed, the histogram shows on its own
+  el.revealState.textContent = !open
+    ? 'Poll closed — the room can see the histogram.'
+    : current.revealed
+      ? 'The room can see the histogram.'
+      : 'Room sees the prompt and a response count. Close the poll (or reveal) to show the histogram.';
+  el.revealState.className = roomSeesHistogram ? 'muted revealed' : 'muted';
   el.total.textContent = String(responses.length);
   el.identified.textContent = String(responses.filter((r) => r.studentCode).length);
 

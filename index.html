@@ -89,6 +89,9 @@
 
   <section id="ask-section">
     <button id="ask-toggle" class="secondary wide" type="button">Ask a question</button>
+    <!-- Confirmation lives outside the form so it stays visible after the form
+         collapses on send. -->
+    <p id="ask-sent" class="status ok" hidden>✓ Your question was sent to the instructor.</p>
     <div id="ask-form" class="panel" hidden>
       <label for="ask-text">Your question for the instructor</label>
       <textarea id="ask-text" maxlength="1000" placeholder="Type your question…"></textarea>

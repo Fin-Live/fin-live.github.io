@@ -110,11 +110,10 @@ const siteHost = () => location.host || 'fin-live.github.io';
 function render() {
   const live = !!current;
   const open = isOpen(current, clock);
-  const revealed = !!current?.revealed;
-  // Results show when the instructor reveals (peer instruction while open) or
-  // once the poll closes -- a closed poll can't be herded, so the room just
-  // sees the histogram rather than the word "closed".
-  const showResults = live && (revealed || !open);
+  // The histogram shows once the poll closes, or early if the instructor reveals
+  // it (peer instruction). While open and unrevealed the room sees only the
+  // prompt and a count, so a running tally can't pull late answers to the lead.
+  const showResults = live && (!open || !!current.revealed);
 
   show(el.idle, !live);
   show(el.holding, live && !showResults);

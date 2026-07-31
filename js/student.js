@@ -57,6 +57,7 @@ const el = {
 
   askSection: $('#ask-section'),
   askToggle: $('#ask-toggle'),
+  askSent: $('#ask-sent'),
   askForm: $('#ask-form'),
   askText: $('#ask-text'),
   askName: $('#ask-name'),
@@ -293,7 +294,8 @@ function askIdentity() {
 
 el.askAnon.addEventListener('change', renderAskAs);
 el.askName.addEventListener('input', renderAskAs);
-el.askToggle.addEventListener('click', () => showAskForm(true));
+let askSentTimer = 0;
+el.askToggle.addEventListener('click', () => { show(el.askSent, false); showAskForm(true); });
 el.askCancel.addEventListener('click', () => {
   el.askText.value = '';
   setStatus(el.askStatus, '', '');
@@ -327,9 +329,13 @@ el.askSubmit.addEventListener('click', async () => {
     }
 
     el.askText.value = '';
+    setStatus(el.askStatus, '', '');
     showAskForm(false);
-    setStatus(el.askStatus, 'Sent to the instructor.', 'ok');
-    setTimeout(() => setStatus(el.askStatus, '', ''), 4000);
+    // Confirmation shown outside the (now-collapsed) form, so it's actually
+    // visible. Auto-clears after a few seconds.
+    show(el.askSent, true);
+    clearTimeout(askSentTimer);
+    askSentTimer = setTimeout(() => show(el.askSent, false), 5000);
   } catch (err) {
     setStatus(el.askStatus, `Could not send: ${err.message}`, 'err');
   } finally {

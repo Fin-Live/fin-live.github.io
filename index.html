@@ -45,9 +45,7 @@
                    spellcheck="false" placeholder="e.g. K7QM2X" maxlength="12">
           </div>
         </div>
-        <div class="row" style="margin-top:.7rem">
-          <button id="identity-save" type="button">Save</button>
-        </div>
+        <button id="identity-save" class="wide" type="button" style="margin-top:.8rem">Save</button>
         <p class="check">
           <input type="checkbox" id="anon">
           <label for="anon">Answer anonymously (counted, but not recorded for participation)</label>
@@ -73,11 +71,9 @@
       <div id="choices" class="tiles"></div>
 
       <div id="numeric" hidden>
-        <div class="row">
-          <input id="numeric-value" class="grow" type="number" step="any" inputmode="decimal"
-                 autocomplete="off" placeholder="your answer">
-          <button id="numeric-submit" type="button">Send</button>
-        </div>
+        <input id="numeric-value" type="number" step="any" inputmode="decimal"
+               autocomplete="off" placeholder="your answer">
+        <button id="numeric-submit" class="wide" type="button" style="margin-top:.6rem">Send</button>
       </div>
 
       <p id="answer-status" class="status"></p>
@@ -118,10 +114,8 @@
             won't count toward your participation)</label>
         </p>
         <p id="ask-as" class="muted"></p>
-        <div class="row" style="margin-top:.6rem">
-          <button id="ask-submit" type="button">Send</button>
-          <button id="ask-cancel" class="secondary" type="button">Cancel</button>
-        </div>
+        <button id="ask-submit" class="wide" type="button" style="margin-top:.6rem">Send</button>
+        <button id="ask-cancel" class="secondary wide" type="button" style="margin-top:.5rem">Cancel</button>
         <p id="ask-status" class="status"></p>
       </div>
     </section>

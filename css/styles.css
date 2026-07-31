@@ -186,6 +186,12 @@ body.student main { max-width: 30rem; margin: 0 auto; padding: 1.1rem; }
 
 button.wide { width: 100%; }
 
+/* Cohesive rounding and elevated input fills, so buttons and fields match the
+   card radius instead of the base 8px, and text fields read as real inputs on
+   the near-black background. */
+body.student button { border-radius: 12px; }
+body.student input, body.student textarea { border-radius: 12px; background: var(--card-2); }
+
 /* card */
 .qcard { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
 

@@ -131,34 +131,15 @@ one response key it may write for that question.
 server-side, so a mistyped code is rejected immediately — without the code list
 ever being readable by students.
 
-## App Check (blocks scripted abuse)
+## App Check — deliberately not used
 
-App Check makes Firestore reject any request that can't prove it came from this
-web page, via an invisible reCAPTCHA. It's what stops a student pointing a script
-or `curl` at the database directly — scripted vote-stuffing, quota-exhaustion,
-and code brute-forcing all stop working. It does not stop a person using the real
-page with a code they know; nothing but code secrecy does.
-
-Set it up in this order — the wrong order locks out the whole class:
-
-1. **Register a reCAPTCHA v3 site.** In the Firebase console → **App Check** →
-   your web app → **reCAPTCHA v3** → register. It gives a **site key** (public)
-   and stores a secret key. Or create the site at
-   <https://www.google.com/recaptcha/admin> with `fin-live.github.io` as an
-   allowed domain.
-2. **Deploy the site key.** Put it in `RECAPTCHA_SITE_KEY` in
-   [js/config.js](js/config.js), commit, push. The page now sends App Check
-   tokens — but nothing is rejected yet.
-3. **Watch the metrics.** Console → App Check → your app shows a **Verified /
-   Unverified** request split. Load the live pages, answer a question. Verified
-   requests should climb. Give it long enough that real classroom traffic would
-   show up.
-4. **Only then, enable Enforcement** for **Firestore** (and Authentication) in
-   the App Check console. From this point, unattested requests are refused.
-
-To roll back, turn Enforcement off in the console — takes effect immediately, no
-redeploy. For local testing after enforcement is on, register a debug token
-(console → App Check → Manage debug tokens) or just test on the live domain.
+Firebase App Check (reCAPTCHA) would block *scripted* access to the database.
+It's intentionally left out: it only stops automation, and the risks that
+matter here — a shared code, answering while absent, padding your own question
+count — all happen through the real page by a real person, which App Check
+waves through. It would also hand student browsing data to Google for little
+gain. The scaffolding is one commit back in git history if that calculus ever
+changes.
 
 ## Limits
 

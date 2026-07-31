@@ -227,11 +227,15 @@ function renderLive() {
   show(el.liveQtext, !!current.text);
   el.closeNow.disabled = !open;
 
+  // The projector shows results once revealed, and automatically once the poll
+  // closes. So the reveal button only matters while the poll is still open.
+  const roomSeesResults = current.revealed || !open;
   el.reveal.textContent = current.revealed ? 'Hide from projector' : 'Show on projector';
-  el.revealState.textContent = current.revealed
+  el.reveal.disabled = !open; // once closed, results show automatically -- nothing to toggle
+  el.revealState.textContent = roomSeesResults
     ? 'The room can see the results.'
-    : open ? 'Projector shows the response count only.' : 'Projector is holding.';
-  el.revealState.className = current.revealed ? 'muted revealed' : 'muted';
+    : 'Projector shows the prompt and a response count.';
+  el.revealState.className = roomSeesResults ? 'muted revealed' : 'muted';
   el.total.textContent = String(responses.length);
   el.identified.textContent = String(responses.filter((r) => r.studentCode).length);
 

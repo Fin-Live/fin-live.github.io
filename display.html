@@ -37,10 +37,11 @@
   <!-- The pasted question. white-space: pre-wrap keeps the line breaks. -->
   <div id="qtext" class="qtext" hidden></div>
 
-  <!-- Holding: the countdown is the focus; the count keeps participation
-       visible without revealing the split. -->
+  <!-- Holding (poll open, not yet revealed): tell the room how to answer. The
+       count keeps participation visible without showing the split. -->
   <section id="holding" class="holding" hidden>
-    <p id="countdown-big" class="countdown-big"></p>
+    <p id="respond-note" class="respond-note"></p>
+    <p id="countdown-line" class="countdown-line"></p>
     <p id="holding-count" class="stage-sub"></p>
   </section>
 

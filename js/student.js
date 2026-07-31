@@ -6,7 +6,7 @@ import {
   doc, onSnapshot, writeBatch, serverTimestamp, collection,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 import {
-  db, CHOICES, $, show, setStatus, signInStudent,
+  db, CHOICES, MANUAL_WINDOW, $, show, setStatus, signInStudent,
   makeClock, secondsLeft, isOpen, questionTitle,
 } from './common.js';
 
@@ -45,6 +45,7 @@ const el = {
   question: $('#question'),
   title: $('#q-title'),
   countdown: $('#countdown'),
+  timingNote: $('#timing-note'),
   choices: $('#choices'),
   numeric: $('#numeric'),
   numericValue: $('#numeric-value'),
@@ -153,6 +154,12 @@ function render() {
   }
   if (!open) return;
 
+  // A "stays open until I close it" question has no meaningful countdown --
+  // show a note instead of a five-figure second count ticking down.
+  const manual = current.windowSeconds >= MANUAL_WINDOW;
+  show(el.countdown, !manual);
+  show(el.timingNote, manual);
+
   if (current.type === 'choice') {
     show(el.choices, true);
     show(el.numeric, false);
@@ -182,6 +189,7 @@ function render() {
 
 function tick() {
   if (!current || current.closedAt) { render(); return; }
+  if (current.windowSeconds >= MANUAL_WINDOW) return; // no numeric countdown
   const left = secondsLeft(clock, current.openedAt, current.windowSeconds);
   if (left === null) return;
   el.countdown.textContent = `${left}s`;

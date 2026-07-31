@@ -257,14 +257,21 @@ body.display { padding: 0; height: 100vh; overflow: hidden; }
 
 .holding, .results-wrap { display: flex; flex-direction: column; gap: 1.5vh; }
 
-.countdown-big {
-  font-size: clamp(3.5rem, 18vh, 13rem);
-  font-weight: 800;
-  line-height: 1;
+/* Readable across a lecture hall, but deliberately not the giant number the
+   countdown used to be -- the instruction to answer is the point, not the clock. */
+.respond-note {
+  font-size: clamp(1.5rem, 3.6vw, 3rem);
+  font-weight: 700;
+  margin: 0;
+}
+.countdown-line {
+  font-size: clamp(1.2rem, 2.6vw, 2.2rem);
+  font-weight: 700;
+  color: var(--muted);
   margin: 0;
   font-variant-numeric: tabular-nums;
 }
-.countdown-big.low { color: var(--warn); }
+.countdown-line.low { color: var(--warn); }
 
 .stage-sub {
   font-size: clamp(1.1rem, 2.6vw, 2.2rem);

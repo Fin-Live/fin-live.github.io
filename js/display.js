@@ -28,7 +28,8 @@ const el = {
   eyebrow: $('#eyebrow'),
   qtext: $('#qtext'),
   holding: $('#holding'),
-  countdownBig: $('#countdown-big'),
+  respondNote: $('#respond-note'),
+  countdownLine: $('#countdown-line'),
   holdingCount: $('#holding-count'),
   results: $('#results'),
   dhist: $('#dhist'),
@@ -104,14 +105,20 @@ function watchResponses(qid) {
 // ---------------------------------------------------------------- rendering
 
 const plural = (n) => `${n} response${n === 1 ? '' : 's'}`;
+const siteHost = () => location.host || 'fin-live.github.io';
 
 function render() {
   const live = !!current;
+  const open = isOpen(current, clock);
   const revealed = !!current?.revealed;
+  // Results show when the instructor reveals (peer instruction while open) or
+  // once the poll closes -- a closed poll can't be herded, so the room just
+  // sees the histogram rather than the word "closed".
+  const showResults = live && (revealed || !open);
 
   show(el.idle, !live);
-  show(el.holding, live && !revealed);
-  show(el.results, live && revealed);
+  show(el.holding, live && !showResults);
+  show(el.results, showResults);
 
   if (!live) {
     el.eyebrow.textContent = '';
@@ -125,17 +132,20 @@ function render() {
   el.qtext.textContent = current.text || '';
   show(el.qtext, !!current.text);
 
-  if (revealed) {
+  if (showResults) {
     drawBars();
     el.resultsCount.textContent = plural(responses.length);
     return;
   }
 
-  const open = isOpen(current, clock);
-  const left = open ? secondsLeft(clock, current.openedAt, current.windowSeconds) : 0;
-  el.countdownBig.textContent = !open ? 'closed'
-    : (current.windowSeconds >= MANUAL_WINDOW ? 'open' : `${left}s`);
-  el.countdownBig.classList.toggle('low', open && left !== null && left <= 5);
+  // Holding: how to answer, plus a modest countdown for a timed question (none
+  // for a "stays open" one, which has no meaningful clock).
+  el.respondNote.textContent = `Answer on your phone — ${siteHost()}`;
+  const manual = current.windowSeconds >= MANUAL_WINDOW;
+  const left = secondsLeft(clock, current.openedAt, current.windowSeconds);
+  el.countdownLine.textContent = manual ? '' : `${left}s left`;
+  el.countdownLine.classList.toggle('low', !manual && left !== null && left <= 5);
+  show(el.countdownLine, !manual);
   el.holdingCount.textContent = plural(responses.length);
 }
 

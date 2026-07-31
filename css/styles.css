@@ -1,3 +1,14 @@
+/* Self-hosted Inter (latin), so the student page's app-like type needs no CDN
+   and works on flaky lecture Wi-Fi. Paths are relative to this file (css/). */
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('../fonts/inter-400.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url('../fonts/inter-500.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url('../fonts/inter-600.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url('../fonts/inter-700.woff2') format('woff2'); }
+
 :root {
   --bg: #ffffff;
   --panel: #f6f7f9;
@@ -119,92 +130,103 @@ code { background: var(--panel); padding: .1rem .3rem; border-radius: 4px; }
 
 /* ------------------------------------------------------------- student page
 
-   Tuned so that on the smallest phone still in circulation the answer buttons
-   sit on the first screen without scrolling. Anything that would push them
-   down — a heading, an open text box, a results panel — is either removed or
-   collapsed behind a tap. */
+   A dark-first, restrained "fintech" surface (Robinhood-ish, not Cash-App
+   round). Blue is used sparingly, as a highlight. Dark is the default; the
+   palette flips to light only when the phone itself is set to light. Tuned so
+   the answer tiles still sit on the first screen of the smallest phone. */
 
-body.student { padding: .9rem; }
-body.student main { max-width: 30rem; }
-
-/* Course branding. Compact on purpose so it never pushes the answer buttons
-   off the first screen on a phone. */
-.brand {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--accent);
-  margin: 0 0 .8rem;
-  padding-bottom: .7rem;
-  border-bottom: 1px solid var(--line);
+body.student {
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -.01em;
+  /* dark palette (default) */
+  --bg: #0a0b0d; --panel: #141619; --card-2: #191c21;
+  --ink: #f3f4f6; --muted: #868c96;
+  --line: rgba(255,255,255,.08); --line-2: rgba(255,255,255,.06);
+  --accent: #4d8dff; --accent-ink: #ffffff; --accent-soft: rgba(77,141,255,.14);
+  --ok: #41c08a; --warn: #e8a25f; --err: #f28b82; --bar: #4d8dff;
+}
+@media (prefers-color-scheme: light) {
+  body.student {
+    --bg: #f5f6f8; --panel: #ffffff; --card-2: #f2f4f7;
+    --ink: #0b1220; --muted: #667085;
+    --line: #e6e8ec; --line-2: #eef0f3;
+    --accent: #2b6fff; --accent-soft: rgba(43,111,255,.10);
+    --ok: #12b76a; --bar: #2b6fff;
+  }
 }
 
-.idbar { margin-bottom: .9rem; }
+body.student main { max-width: 30rem; margin: 0 auto; padding: 1.1rem; }
 
-/* Checkbox and its label on one line. Not scoped to a parent — the identity bar
-   and the ask form both use it, and nowrap stops the long label from being
-   bumped below the box. */
-.check {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: .55rem;
-  align-items: flex-start;
-  margin: .6rem 0 0;
+/* app header + depleting time bar */
+.appbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px 12px; border-bottom: 1px solid var(--line-2); background: var(--bg);
 }
-.check input {
-  flex: none;
-  width: 1.15rem;
-  height: 1.15rem;
-  min-height: auto;
-  margin-top: .15rem;
-}
-.check label { flex: 1 1 0; margin: 0; font-size: .875rem; color: var(--ink); }
+.brand { font-weight: 600; font-size: 1rem; letter-spacing: -.02em; color: var(--ink); }
+.brand small { display: block; margin-top: 1px; font-weight: 500; font-size: .72rem;
+  color: var(--muted); letter-spacing: 0; }
+.timebar { height: 2px; background: var(--line-2); }
+.timebar > i { display: block; height: 100%; width: 0; background: var(--accent);
+  transition: width .5s linear; }
 
-button.link {
-  background: none;
-  border: none;
-  color: var(--accent);
-  padding: .25rem;
-  min-height: auto;
-  text-decoration: underline;
-}
+.idbar { margin-bottom: 1rem; }
+.idrow { display: flex; align-items: center; justify-content: space-between; font-size: .9rem; }
+.idrow .who { display: inline-flex; align-items: center; gap: 9px; color: var(--muted); overflow: hidden; }
+.idrow .who span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dot { width: 26px; height: 26px; border-radius: 999px; border: 1px solid var(--line);
+  display: grid; place-items: center; font-size: .74rem; font-weight: 600; color: var(--ink); flex: none; }
+.change { background: none; border: none; color: var(--accent); font-weight: 500;
+  font-size: .9rem; padding: .25rem; min-height: auto; flex: none; }
+
+/* Checkbox + label on one line (identity and ask forms). */
+.check { display: flex; flex-wrap: nowrap; gap: .55rem; align-items: flex-start; margin: .7rem 0 0; }
+.check input { flex: none; width: 1.15rem; height: 1.15rem; min-height: auto; margin-top: .15rem; }
+.check label { flex: 1 1 0; margin: 0; font-size: .85rem; color: var(--ink); }
 
 button.wide { width: 100%; }
 
-/* The between-questions state. No border, no panel, nothing to read twice. */
+/* card */
+.qcard { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+
+.qhead { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: 16px; }
+.eyebrow { font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.count { font-variant-numeric: tabular-nums; font-weight: 600; font-size: .9rem; color: var(--muted);
+  border: 1px solid var(--line); padding: 4px 10px; border-radius: 8px; }
+.count.low { color: var(--warn); border-color: var(--warn); }
+
+/* answer tiles: quiet dark cards; blue only on the one you pick */
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tiles button {
+  background: var(--card-2); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 12px; min-height: 82px; font-size: 1.7rem; font-weight: 600; padding: 0;
+  transition: border-color .12s, background .12s, transform .08s;
+}
+.tiles button:active { transform: scale(.97); border-color: var(--accent); background: var(--accent-soft); }
+.tiles button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
+#numeric { margin-top: 12px; }
+#ask-section { margin-top: 1.1rem; }
+
+/* between-questions: nothing worth a second look */
 .quiet { text-align: center; color: var(--muted); padding: 2.5rem 1rem; }
 .quiet p { margin: .3rem 0; }
 
+/* recorded confirmation: an elegant check that draws in, then stops */
 .confirm {
-  text-align: center;
-  padding: 2rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--panel);
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: .25rem;
+  padding: 2.4rem 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
 }
-.confirm p { margin: .3rem 0; }
-
-/* The little reward for answering: a big emoji that pops in, and an upbeat
-   one-word headline. Kept brief so it still reads as "done, look up". */
-.reward-emoji {
-  font-size: 4.5rem;
-  line-height: 1;
-  margin: 0 0 .3rem;
-  animation: reward-pop .5s cubic-bezier(.2, .8, .3, 1.3) both;
-}
-.reward-head { font-size: 1.4rem; font-weight: 700; color: var(--ok); margin: 0 0 .1rem; }
-#confirm-answer { font-size: 1.15rem; font-weight: 600; }
-
-@keyframes reward-pop {
-  0%   { transform: scale(.4) rotate(-8deg); opacity: 0; }
-  60%  { transform: scale(1.15) rotate(3deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0); opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .reward-emoji { animation: none; }
-}
-
-#choices, #numeric { margin-top: .8rem; }
-#ask-section { margin-top: 1.25rem; }
+.recorded-check { width: 60px; height: 60px; margin-bottom: .4rem; }
+.recorded-check .ring { fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: .35; }
+.recorded-check .tick { fill: none; stroke: var(--ok); stroke-width: 3;
+  stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 40;
+  animation: check-draw .5s ease .1s both; }
+.reward-head { font-size: 1.35rem; font-weight: 600; letter-spacing: -.02em; margin: 0; color: var(--ink); }
+#confirm-answer { color: var(--muted); font-size: .95rem; margin: .1rem 0 0; }
+.confirm .muted { margin-top: .3rem; }
+@keyframes check-draw { from { stroke-dashoffset: 40; } to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .recorded-check .tick { animation: none; stroke-dashoffset: 0; } }
 
 .revealed { color: var(--warn) !important; font-weight: 600; }
 
@@ -344,12 +366,8 @@ body.display { padding: 0; height: 100vh; overflow: hidden; }
 }
 .fs-btn:hover { opacity: 1; }
 
-/* Phones: two big square-ish targets per row rather than a thin strip of four.
-   Easier to hit with a thumb and readable at arm's length, which matters more
-   here than fitting every option on one line. */
+/* Phones: bigger, thumb-friendly answer tiles. */
 @media (max-width: 30rem) {
-  .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .choices button { font-size: 1.75rem; min-height: 4.5rem; }
-  .countdown { font-size: 1.5rem; }
+  .tiles button { min-height: 88px; font-size: 1.85rem; }
   .quiet { padding: 1.75rem .5rem; }
 }

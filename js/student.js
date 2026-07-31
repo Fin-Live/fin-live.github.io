@@ -34,7 +34,10 @@ function remember(qid, answer) {
 const el = {
   summary: $('#identity-summary'),
   summaryText: $('#identity-text'),
+  avatar: $('#identity-avatar'),
   change: $('#identity-change'),
+  timebar: $('#timebar'),
+  timebarFill: $('#timebar-fill'),
   edit: $('#identity-edit'),
   save: $('#identity-save'),
   code: $('#code'),
@@ -53,8 +56,6 @@ const el = {
   answerStatus: $('#answer-status'),
 
   confirm: $('#confirm'),
-  confirmEmoji: $('#confirm-emoji'),
-  confirmHead: $('#confirm-head'),
   confirmAnswer: $('#confirm-answer'),
 
   askSection: $('#ask-section'),
@@ -105,6 +106,9 @@ function renderIdentity() {
     el.summaryText.textContent = who.anonymous
       ? 'Answering anonymously'
       : [firstName(), `Code ${who.code}`].filter(Boolean).join(' · ');
+    el.avatar.textContent = who.anonymous
+      ? '·'
+      : (firstName()[0] || who.code[0] || '?').toUpperCase();
   }
 }
 
@@ -133,58 +137,35 @@ el.change.addEventListener('click', () => {
 
 // ---------------------------------------------------------------- rendering
 
-// A small, varied reward for answering. Picked once per question and kept
-// stable across re-renders, so it doesn't flicker or change while shown.
-//
-// Deliberately acknowledges PARTICIPATION only, never correctness -- the app
-// doesn't know if an answer is right, so nothing here ("Nice", a star, a
-// lightbulb) may imply it was.
-const REWARDS = [
-  { emoji: '🎉', head: 'Answer in!' },
-  { emoji: '🙌', head: 'Got it!' },
-  { emoji: '👍', head: 'Got it!' },
-  { emoji: '🙏', head: 'Thanks!' },
-  { emoji: '🗳️', head: 'Answer in!' },
-  { emoji: '😊', head: 'Thanks!' },
-];
-let reward = { qid: null, emoji: '', head: '' };
-function rewardFor(qid) {
-  if (reward.qid !== qid) {
-    reward = { qid, ...REWARDS[Math.floor(Math.random() * REWARDS.length)] };
-  }
-  return reward;
-}
-
 function render() {
   const open = isOpen(current, clock);
   const mine = current ? answered.get(current.qid) : undefined;
   const ready = !!identity();
   const done = mine !== undefined;
+  const manual = !!current && current.windowSeconds >= MANUAL_WINDOW;
+  const answering = !!current && open && !done;
 
   // Between questions, and after you have answered, the page holds nothing
   // worth looking at. That is the whole point.
   show(el.idle, !current || (!open && !done));
-  show(el.question, !!current && open && !done);
+  show(el.question, answering);
   show(el.confirm, !!current && done);
+  show(el.timebar, answering && !manual);
 
   if (!current) return;
 
   el.title.textContent = questionTitle(current);
 
   if (done) {
-    const r = rewardFor(current.qid);
-    el.confirmEmoji.textContent = r.emoji;
-    el.confirmHead.textContent = r.head;
     el.confirmAnswer.textContent = open
-      ? `Your answer: ${mine}`
-      : `Your answer: ${mine} — poll closed`;
+      ? `Your answer · ${mine}`
+      : `Your answer · ${mine} — poll closed`;
     return;
   }
   if (!open) return;
 
   // A "stays open until I close it" question has no meaningful countdown --
   // show a note instead of a five-figure second count ticking down.
-  const manual = current.windowSeconds >= MANUAL_WINDOW;
   show(el.countdown, !manual);
   show(el.timingNote, manual);
 
@@ -222,6 +203,7 @@ function tick() {
   if (left === null) return;
   el.countdown.textContent = `${left}s`;
   el.countdown.classList.toggle('low', left <= 5);
+  el.timebarFill.style.width = `${Math.max(0, Math.min(100, (left / current.windowSeconds) * 100))}%`;
   if (left === 0) render();
 }
 

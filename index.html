@@ -3,126 +3,129 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#14161a">
-  <title>Class Questions</title>
+  <meta name="theme-color" content="#0a0b0d">
+  <title>FIN 205 · Class Questions</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <!--
   Designed to be picked up, used in a few seconds, and put back down.
 
-  Everything here is in service of that: the question text lives on the
-  lecture slide rather than on the phone, answering is one tap with no
-  scrolling, there is no feed or history to browse, and between questions the
-  screen deliberately holds nothing worth looking at.
+  The question text lives on the projector, not the phone; answering is one tap
+  with no scrolling; there is no feed or history to browse; and between questions
+  the screen deliberately holds nothing worth looking at. The dark, restrained
+  styling is meant to read as a real app, not a web form.
 -->
 <body class="student">
-<main>
 
-  <header class="brand">FIN 205: Financial Management</header>
+  <header class="appbar">
+    <div class="brand">FIN&nbsp;205<small>Financial Management</small></div>
+  </header>
+  <!-- Depletes over a timed question; hidden for "stays open" ones. -->
+  <div id="timebar" class="timebar" hidden><i id="timebar-fill"></i></div>
 
-  <!-- Collapses to a single line once a code is saved, so it never pushes the
-       answer buttons below the fold. -->
-  <div class="idbar">
-    <div id="identity-summary" class="row" hidden>
-      <span id="identity-text" class="grow muted"></span>
-      <button id="identity-change" class="link" type="button">Change</button>
-    </div>
+  <main>
+    <!-- Collapses to a single line once a code is saved, so it never pushes the
+         answer tiles below the fold. -->
+    <div class="idbar">
+      <div id="identity-summary" class="idrow" hidden>
+        <span class="who"><span id="identity-avatar" class="dot"></span><span id="identity-text"></span></span>
+        <button id="identity-change" class="change" type="button">Change</button>
+      </div>
 
-    <div id="identity-edit">
-      <div class="row">
-        <div class="grow">
-          <label for="name">First name</label>
-          <input id="name" autocomplete="given-name" spellcheck="false"
-                 placeholder="e.g. John" maxlength="40">
+      <div id="identity-edit">
+        <div class="row">
+          <div class="grow">
+            <label for="name">First name</label>
+            <input id="name" autocomplete="given-name" spellcheck="false"
+                   placeholder="e.g. John" maxlength="40">
+          </div>
+          <div class="grow">
+            <label for="code">Your code</label>
+            <input id="code" autocomplete="off" autocapitalize="characters"
+                   spellcheck="false" placeholder="e.g. K7QM2X" maxlength="12">
+          </div>
         </div>
-        <div class="grow">
-          <label for="code">Your code</label>
-          <input id="code" autocomplete="off" autocapitalize="characters"
-                 spellcheck="false" placeholder="e.g. K7QM2X" maxlength="12">
+        <div class="row" style="margin-top:.7rem">
+          <button id="identity-save" type="button">Save</button>
+        </div>
+        <p class="check">
+          <input type="checkbox" id="anon">
+          <label for="anon">Answer anonymously (counted, but not recorded for participation)</label>
+        </p>
+        <p class="muted">Saved on this phone — you only enter this once, in the first
+          lecture. Your name is used when you ask a question, so the instructor can
+          reply to you by name.</p>
+      </div>
+    </div>
+
+    <section id="idle" class="quiet" hidden>
+      <p>No question right now.</p>
+      <p class="muted">Put your phone down — this page keeps itself up to date.</p>
+    </section>
+
+    <section id="question" class="qcard" hidden>
+      <div class="qhead">
+        <span id="q-title" class="eyebrow"></span>
+        <span id="countdown" class="count"></span>
+      </div>
+      <p id="timing-note" class="muted" hidden>Your instructor will close this when ready.</p>
+
+      <div id="choices" class="tiles"></div>
+
+      <div id="numeric" hidden>
+        <div class="row">
+          <input id="numeric-value" class="grow" type="number" step="any" inputmode="decimal"
+                 autocomplete="off" placeholder="your answer">
+          <button id="numeric-submit" type="button">Send</button>
         </div>
       </div>
-      <div class="row" style="margin-top:.6rem">
-        <button id="identity-save" type="button">Save</button>
+
+      <p id="answer-status" class="status"></p>
+    </section>
+
+    <!-- Reads as "done, look up": an elegant check that draws itself in, no more. -->
+    <section id="confirm" class="confirm" hidden>
+      <svg class="recorded-check" viewBox="0 0 52 52" aria-hidden="true">
+        <circle class="ring" cx="26" cy="26" r="24"/>
+        <path class="tick" d="M15 27 l7.5 7.5 L37 19"/>
+      </svg>
+      <p class="reward-head">Recorded</p>
+      <p id="confirm-answer"></p>
+      <p class="muted">You can put your phone down.</p>
+    </section>
+
+    <section id="ask-section">
+      <button id="ask-toggle" class="secondary wide" type="button">Ask a question</button>
+      <!-- Confirmation lives outside the form so it stays visible after the form
+           collapses on send. -->
+      <p id="ask-sent" class="status ok" hidden>Your question was sent to the instructor.</p>
+      <div id="ask-form" class="qcard" hidden>
+        <label for="ask-text">Your question for the instructor</label>
+        <textarea id="ask-text" maxlength="1000" placeholder="Type your question…"></textarea>
+
+        <!-- Only appears when they're asking under their code but never entered a
+             name, so a question never arrives labelled with a bare code. -->
+        <div id="ask-name-wrap" style="margin-top:.6rem" hidden>
+          <label for="ask-name">Your first name</label>
+          <input id="ask-name" autocomplete="given-name" spellcheck="false"
+                 maxlength="40" placeholder="e.g. John">
+        </div>
+        <!-- Separate from the answering setting on purpose: a student may want
+             credit for answers but anonymity for a question they're nervous to ask. -->
+        <p class="check" style="margin-top:.6rem">
+          <input type="checkbox" id="ask-anon">
+          <label for="ask-anon">Ask anonymously (your name won't be shown, and it
+            won't count toward your participation)</label>
+        </p>
+        <p id="ask-as" class="muted"></p>
+        <div class="row" style="margin-top:.6rem">
+          <button id="ask-submit" type="button">Send</button>
+          <button id="ask-cancel" class="secondary" type="button">Cancel</button>
+        </div>
+        <p id="ask-status" class="status"></p>
       </div>
-      <p class="row check">
-        <input type="checkbox" id="anon">
-        <label for="anon">Answer anonymously (counted, but not recorded for participation)</label>
-      </p>
-      <p class="muted">Saved on this phone — you only enter this once, in the first
-        lecture. Your name is used when you ask a question, so the instructor can
-        reply to you by name.</p>
-    </div>
-  </div>
-
-  <section id="idle" class="quiet" hidden>
-    <p>No question right now.</p>
-    <p class="muted">Put your phone down — this page keeps itself up to date.</p>
-  </section>
-
-  <section id="question" class="panel" hidden>
-    <div class="row" style="justify-content:space-between;align-items:baseline">
-      <h2 id="q-title" style="margin:0"></h2>
-      <span id="countdown" class="countdown"></span>
-    </div>
-    <p id="timing-note" class="muted" hidden>Your instructor will close this when ready.</p>
-
-    <div id="choices" class="choices"></div>
-
-    <div id="numeric" hidden>
-      <div class="row">
-        <input id="numeric-value" class="grow" type="number" step="any" inputmode="decimal"
-               autocomplete="off" placeholder="your answer">
-        <button id="numeric-submit" type="button">Send</button>
-      </div>
-    </div>
-
-    <p id="answer-status" class="status"></p>
-  </section>
-
-  <!-- Deliberately large and final-looking: the point is that it reads as
-       "done, look up" from arm's length, with a small reward for answering. -->
-  <section id="confirm" class="confirm" hidden>
-    <p id="confirm-emoji" class="reward-emoji" aria-hidden="true">🎉</p>
-    <p id="confirm-head" class="reward-head"></p>
-    <p id="confirm-answer"></p>
-    <p class="muted">Recorded — you can put your phone down.</p>
-  </section>
-
-  <section id="ask-section">
-    <button id="ask-toggle" class="secondary wide" type="button">Ask a question</button>
-    <!-- Confirmation lives outside the form so it stays visible after the form
-         collapses on send. -->
-    <p id="ask-sent" class="status ok" hidden>✓ Your question was sent to the instructor.</p>
-    <div id="ask-form" class="panel" hidden>
-      <label for="ask-text">Your question for the instructor</label>
-      <textarea id="ask-text" maxlength="1000" placeholder="Type your question…"></textarea>
-
-      <!-- Only appears when they're asking under their code but never entered a
-           name. Without it the question arrives labelled with a six-character
-           code, which is no use to anyone trying to answer a person. -->
-      <div id="ask-name-wrap" style="margin-top:.6rem" hidden>
-        <label for="ask-name">Your first name</label>
-        <input id="ask-name" autocomplete="given-name" spellcheck="false"
-               maxlength="40" placeholder="e.g. John">
-      </div>
-      <!-- Separate from the answering setting on purpose: a student may well
-           want credit for their answers but anonymity for a question they are
-           nervous about asking. -->
-      <p class="row check" style="margin-top:.6rem">
-        <input type="checkbox" id="ask-anon">
-        <label for="ask-anon">Ask anonymously (your name won't be shown, and it
-          won't count toward your participation)</label>
-      </p>
-      <p id="ask-as" class="muted"></p>
-      <div class="row" style="margin-top:.5rem">
-        <button id="ask-submit" type="button">Send</button>
-        <button id="ask-cancel" class="secondary" type="button">Cancel</button>
-      </div>
-      <p id="ask-status" class="status"></p>
-    </div>
-  </section>
-
-</main>
+    </section>
+  </main>
 
 <script type="module" src="js/student.js"></script>
 </body>

@@ -53,6 +53,8 @@ const el = {
   answerStatus: $('#answer-status'),
 
   confirm: $('#confirm'),
+  confirmEmoji: $('#confirm-emoji'),
+  confirmHead: $('#confirm-head'),
   confirmAnswer: $('#confirm-answer'),
 
   askSection: $('#ask-section'),
@@ -131,6 +133,25 @@ el.change.addEventListener('click', () => {
 
 // ---------------------------------------------------------------- rendering
 
+// A small, varied reward for answering. Picked once per question and kept
+// stable across re-renders, so it doesn't flicker or change while shown.
+const REWARDS = [
+  { emoji: '🎉', head: 'Nice!' },
+  { emoji: '🙌', head: 'Answer in!' },
+  { emoji: '👍', head: 'Got it!' },
+  { emoji: '⭐', head: 'Thanks!' },
+  { emoji: '😊', head: 'Thanks for chiming in!' },
+  { emoji: '💡', head: 'Good thinking!' },
+  { emoji: '✅', head: 'Locked in!' },
+];
+let reward = { qid: null, emoji: '', head: '' };
+function rewardFor(qid) {
+  if (reward.qid !== qid) {
+    reward = { qid, ...REWARDS[Math.floor(Math.random() * REWARDS.length)] };
+  }
+  return reward;
+}
+
 function render() {
   const open = isOpen(current, clock);
   const mine = current ? answered.get(current.qid) : undefined;
@@ -148,6 +169,9 @@ function render() {
   el.title.textContent = questionTitle(current);
 
   if (done) {
+    const r = rewardFor(current.qid);
+    el.confirmEmoji.textContent = r.emoji;
+    el.confirmHead.textContent = r.head;
     el.confirmAnswer.textContent = open
       ? `Your answer: ${mine}`
       : `Your answer: ${mine} — poll closed`;

@@ -23,6 +23,7 @@ const el = {
 
   lecture: $('#lecture'),
   label: $('#label'),
+  questionText: $('#question-text'),
   type: $('#type'),
   numOptions: $('#num-options'),
   numOptionsWrap: $('#num-options-wrap'),
@@ -32,6 +33,7 @@ const el = {
 
   live: $('#live'),
   liveTitle: $('#live-title'),
+  liveQtext: $('#live-qtext'),
   countdown: $('#countdown'),
   closeNow: $('#close-now'),
   reveal: $('#reveal'),
@@ -121,6 +123,9 @@ el.launch.addEventListener('click', async () => {
   const payload = {
     lecture,
     label,
+    // Trimmed at the ends but internal line breaks kept, so a pasted
+    // multiple-choice prompt shows on the projector exactly as laid out.
+    text: el.questionText.value.trim(),
     type: el.type.value,
     numOptions: el.type.value === 'choice' ? Number(el.numOptions.value) : null,
     windowSeconds: Number(el.window.value),
@@ -182,12 +187,21 @@ el.reveal.addEventListener('click', async () => {
 
 // ---------------------------------------------------------------- live view
 
+let firstStateSnapshot = true;
 function watchState() {
   onSnapshot(doc(db, 'state', 'current'), (snap) => {
     const next = snap.exists() ? snap.data() : null;
     const changed = next?.qid !== current?.qid;
+    // Sync the countdown clock only to a question that opens while we're
+    // watching -- i.e. one we just launched. The first snapshot after login is
+    // the leftover last question; syncing to its old openedAt would reset the
+    // timer to a full window and show a phantom countdown for a poll that
+    // closed long ago.
+    if (next && !firstStateSnapshot && changed && !next.closedAt) {
+      clock.syncTo(next.openedAt);
+    }
+    firstStateSnapshot = false;
     current = next;
-    if (next?.openedAt) clock.syncTo(next.openedAt);
     if (changed) watchResponses(next?.qid);
     renderLive();
   });
@@ -209,6 +223,8 @@ function renderLive() {
 
   const open = isOpen(current, clock);
   el.liveTitle.textContent = questionTitle(current) || '(untitled)';
+  el.liveQtext.textContent = current.text || '';
+  show(el.liveQtext, !!current.text);
   el.closeNow.disabled = !open;
 
   el.reveal.textContent = current.revealed ? 'Hide from projector' : 'Show on projector';

@@ -179,6 +179,18 @@ button.wide { width: 100%; }
 
 .revealed { color: var(--warn) !important; font-weight: 600; }
 
+/* Shows the instructor exactly what the room is reading, line breaks and all. */
+.qtext-preview {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: .5rem 0 0;
+  padding: .6rem .7rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: .95rem;
+}
+
 /* Anonymous askers read as muted so named ones stand out in the feed. */
 .feed-item .anon { color: var(--muted); font-weight: 600; }
 .records-label {
@@ -209,30 +221,44 @@ body.display { padding: 0; height: 100vh; overflow: hidden; }
   gap: 3vh;
 }
 
-.stage-head { display: flex; justify-content: space-between; align-items: baseline; gap: 2vw; }
-.stage-title { font-size: clamp(1.5rem, 3.5vw, 3.5rem); font-weight: 700; }
-.stage-meta {
-  font-size: clamp(1.25rem, 3vw, 3rem);
+.stage-eyebrow {
+  font-size: clamp(1rem, 2.2vw, 2rem);
   font-weight: 700;
   color: var(--muted);
-  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: 0;
 }
-.stage-meta.low { color: var(--warn); }
 
-/* Holding state: participation visible, distribution not. */
-.holding { text-align: center; }
-.holding-count {
-  font-size: clamp(5rem, 22vh, 16rem);
+/* The pasted question. pre-wrap keeps the line breaks a multiple-choice prompt
+   depends on; the height cap stops a long question shoving the countdown or the
+   bars off the bottom of a projector -- it scrolls within itself instead. */
+.qtext {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: clamp(1.4rem, 3.4vw, 3.1rem);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+  max-height: 40vh;
+  overflow: auto;
+}
+
+.holding, .results-wrap { display: flex; flex-direction: column; gap: 1.5vh; }
+
+.countdown-big {
+  font-size: clamp(3.5rem, 18vh, 13rem);
   font-weight: 800;
   line-height: 1;
   margin: 0;
   font-variant-numeric: tabular-nums;
 }
-.holding-label {
-  font-size: clamp(1.25rem, 3vw, 2.5rem);
+.countdown-big.low { color: var(--warn); }
+
+.stage-sub {
+  font-size: clamp(1.1rem, 2.6vw, 2.2rem);
   color: var(--muted);
-  margin: .5rem 0 0;
-  text-align: center;
+  margin: 0;
 }
 .idle-note { margin: auto; }
 
@@ -256,7 +282,7 @@ body.display { padding: 0; height: 100vh; overflow: hidden; }
 .dhist-track {
   background: var(--panel);
   border-radius: .5vh;
-  height: clamp(2.5rem, 9vh, 7rem);
+  height: clamp(2rem, 7vh, 5.5rem);
   overflow: hidden;
 }
 .dhist-fill { display: block; background: var(--bar); height: 100%; transition: width .35s ease; }

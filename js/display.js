@@ -25,11 +25,14 @@ const el = {
   loginStatus: $('#login-status'),
 
   stage: $('#stage'),
-  title: $('#title'),
-  meta: $('#meta'),
+  eyebrow: $('#eyebrow'),
+  qtext: $('#qtext'),
   holding: $('#holding'),
+  countdownBig: $('#countdown-big'),
   holdingCount: $('#holding-count'),
   results: $('#results'),
+  dhist: $('#dhist'),
+  resultsCount: $('#results-count'),
   idle: $('#idle'),
   fullscreen: $('#fullscreen'),
 };
@@ -70,12 +73,19 @@ el.fullscreen.addEventListener('click', () => {
 
 // ---------------------------------------------------------------- data
 
+let firstStateSnapshot = true;
 function watchState() {
   onSnapshot(doc(db, 'state', 'current'), (snap) => {
     const next = snap.exists() ? snap.data() : null;
     const changed = next?.qid !== current?.qid;
+    // Only sync the countdown clock to a question that opens while we watch, not
+    // to a stale leftover on load -- otherwise the projector shows a phantom
+    // countdown for a poll that already closed. Matches the student page.
+    if (next && !firstStateSnapshot && changed && !next.closedAt) {
+      clock.syncTo(next.openedAt);
+    }
+    firstStateSnapshot = false;
     current = next;
-    if (next?.openedAt) clock.syncTo(next.openedAt);
     if (changed) watchResponses(next?.qid);
     render();
   });
@@ -93,6 +103,8 @@ function watchResponses(qid) {
 
 // ---------------------------------------------------------------- rendering
 
+const plural = (n) => `${n} response${n === 1 ? '' : 's'}`;
+
 function render() {
   const live = !!current;
   const revealed = !!current?.revealed;
@@ -102,29 +114,29 @@ function render() {
   show(el.results, live && revealed);
 
   if (!live) {
-    el.title.textContent = '';
-    el.meta.textContent = '';
+    el.eyebrow.textContent = '';
+    show(el.qtext, false);
     return;
   }
 
-  el.title.textContent = questionTitle(current);
+  // Lecture and label as a small eyebrow; the pasted question below it, kept
+  // visible in both the holding and revealed states.
+  el.eyebrow.textContent = questionTitle(current);
+  el.qtext.textContent = current.text || '';
+  show(el.qtext, !!current.text);
 
   if (revealed) {
-    // A countdown next to the results is noise: by the time the room is
-    // reading bars, how long is left has stopped mattering. The total is what
-    // the percentages are out of, so it earns the space instead.
-    el.meta.textContent = `${responses.length} response${responses.length === 1 ? '' : 's'}`;
-    el.meta.classList.remove('low');
     drawBars();
+    el.resultsCount.textContent = plural(responses.length);
     return;
   }
 
   const open = isOpen(current, clock);
   const left = open ? secondsLeft(clock, current.openedAt, current.windowSeconds) : 0;
-  el.meta.textContent = !open ? 'closed'
+  el.countdownBig.textContent = !open ? 'closed'
     : (current.windowSeconds >= MANUAL_WINDOW ? 'open' : `${left}s`);
-  el.meta.classList.toggle('low', open && left !== null && left <= 5);
-  el.holdingCount.textContent = String(responses.length);
+  el.countdownBig.classList.toggle('low', open && left !== null && left <= 5);
+  el.holdingCount.textContent = plural(responses.length);
 }
 
 function drawBars() {
@@ -132,7 +144,7 @@ function drawBars() {
   const max = Math.max(1, ...bins.map((b) => b.count));
   const total = responses.length;
 
-  el.results.innerHTML = '';
+  el.dhist.innerHTML = '';
   for (const b of bins) {
     const row = document.createElement('div');
     row.className = 'dhist-row';
@@ -144,7 +156,7 @@ function drawBars() {
     row.querySelector('.dhist-fill').style.width = `${(b.count / max) * 100}%`;
     row.querySelector('.dhist-count').textContent =
       total ? `${Math.round((b.count / total) * 100)}%` : '0%';
-    el.results.appendChild(row);
+    el.dhist.appendChild(row);
   }
 }
 

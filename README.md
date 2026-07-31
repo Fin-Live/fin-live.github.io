@@ -54,19 +54,23 @@ exists; the database stores codes with no names attached.
 
 ## Running a lecture
 
-Type the lecture and question label, pick the answer type (multiple choice or
-numeric) and the window, hit **Launch**. Students already on the student page
-see it immediately. The histogram fills live; **Close now** ends it early. The
-question number auto-increments, so re-asking is one click.
+Type the lecture and question label, optionally paste the **question text**
+(line breaks are kept, so a whole multiple-choice prompt pastes in as laid out),
+pick the answer type and the window (30 s up to 5 minutes, or "stays open until
+I close it"), and hit **Launch**. Students already on the student page can answer
+immediately. The histogram fills live; **Close now** ends it early. The question
+number auto-increments, and the pasted text stays put, so re-asking the same
+question for a second round is one click.
 
 Students never see the histogram on their phones — only their own confirmation.
 
 ### The projector view
 
 `display.html` is a chrome-free page for the screen the room can see. It shows
-the question label, the countdown, and a count of how many have answered — but
-**not** the distribution, until you press **Show on projector** in the console.
-It resets to holding on every launch.
+the question text (above the countdown), the label, and a count of how many have
+answered — but **not** the distribution, until you press **Show on projector** in
+the console. It resets to holding on every launch, and the question text stays
+visible when the histogram is revealed.
 
 It inherits your login if opened in the same browser as the console. It only
 ever reads.

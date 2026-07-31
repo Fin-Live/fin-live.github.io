@@ -33,20 +33,23 @@
 </div>
 
 <main id="stage" class="stage" hidden>
-  <header class="stage-head">
-    <span id="title" class="stage-title"></span>
-    <span id="meta" class="stage-meta"></span>
-  </header>
+  <p id="eyebrow" class="stage-eyebrow"></p>
+  <!-- The pasted question. white-space: pre-wrap keeps the line breaks. -->
+  <div id="qtext" class="qtext" hidden></div>
 
-  <!-- Holding state: participation is visible, distribution is not. -->
+  <!-- Holding: the countdown is the focus; the count keeps participation
+       visible without revealing the split. -->
   <section id="holding" class="holding" hidden>
-    <p id="holding-count" class="holding-count">0</p>
-    <p class="holding-label">responses</p>
+    <p id="countdown-big" class="countdown-big"></p>
+    <p id="holding-count" class="stage-sub"></p>
   </section>
 
-  <section id="results" class="dhist" hidden></section>
+  <section id="results" class="results-wrap" hidden>
+    <div id="dhist" class="dhist"></div>
+    <p id="results-count" class="stage-sub"></p>
+  </section>
 
-  <p id="idle" class="holding-label idle-note" hidden>Waiting for the next question</p>
+  <p id="idle" class="stage-sub idle-note" hidden>Waiting for the next question</p>
 </main>
 
 <button id="fullscreen" class="fs-btn" type="button" title="Fullscreen" hidden>⛶</button>

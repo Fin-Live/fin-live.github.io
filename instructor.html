@@ -40,6 +40,15 @@
           <input id="label" autocomplete="off" placeholder="Q1">
         </div>
       </div>
+      <div style="margin-top:.6rem">
+        <label for="question-text">Question text — shown on the projector (optional)</label>
+        <textarea id="question-text" rows="5" spellcheck="false"
+          placeholder="Paste the question here. Line breaks are kept — e.g.
+
+What is r?
+a) a discount rate
+b) a growth rate"></textarea>
+      </div>
       <div class="row" style="margin-top:.6rem">
         <div class="grow">
           <label for="type">Answer type</label>
@@ -58,10 +67,12 @@
         <div class="grow">
           <label for="window">Closes after</label>
           <select id="window">
-            <option value="10">10 seconds</option>
-            <option value="20" selected>20 seconds</option>
             <option value="30">30 seconds</option>
             <option value="60">60 seconds</option>
+            <option value="90" selected>90 seconds</option>
+            <option value="120">2 minutes</option>
+            <option value="180">3 minutes</option>
+            <option value="300">5 minutes</option>
             <option value="86400">stays open until I close it</option>
           </select>
         </div>
@@ -79,6 +90,7 @@
         <h2 id="live-title" style="margin:0"></h2>
         <span id="countdown" class="countdown"></span>
       </div>
+      <p id="live-qtext" class="qtext-preview" hidden></p>
       <div class="row" style="margin-top:.5rem">
         <button id="close-now" class="secondary" type="button">Close now</button>
         <button id="reveal" type="button">Show on projector</button>

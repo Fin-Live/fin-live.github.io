@@ -142,8 +142,8 @@ body.student {
   --bg: #0a0b0d; --panel: #141619; --card-2: #191c21;
   --ink: #f3f4f6; --muted: #868c96;
   --line: rgba(255,255,255,.08); --line-2: rgba(255,255,255,.06);
-  --accent: #4d8dff; --accent-ink: #ffffff; --accent-soft: rgba(77,141,255,.14);
-  --ok: #41c08a; --warn: #e8a25f; --err: #f28b82; --bar: #4d8dff;
+  --accent: #4a6cc0; --accent-ink: #ffffff; --accent-soft: rgba(74,108,192,.18);
+  --ok: #41c08a; --warn: #e8a25f; --err: #f28b82; --bar: #4a6cc0;
 }
 
 body.student main { max-width: 30rem; margin: 0 auto; padding: 1.1rem; }

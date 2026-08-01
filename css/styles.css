@@ -142,8 +142,11 @@ body.student {
   --bg: #0a0b0d; --panel: #141619; --card-2: #191c21;
   --ink: #f3f4f6; --muted: #868c96;
   --line: rgba(255,255,255,.08); --line-2: rgba(255,255,255,.06);
-  --accent: #4a6cc0; --accent-ink: #ffffff; --accent-soft: rgba(74,108,192,.18);
-  --ok: #41c08a; --warn: #e8a25f; --err: #f28b82; --bar: #4a6cc0;
+  /* One light silver-blue (a cousin of the projector's histogram bars) is the
+     single accent: light buttons with dark text, plus the selected tile, links
+     and time bar. Dark ink because the accent is now light. */
+  --accent: #b8c6df; --accent-ink: #0b0d12; --accent-soft: rgba(184,198,223,.16);
+  --ok: #41c08a; --warn: #e8a25f; --err: #f28b82; --bar: #b8c6df;
 }
 
 body.student main { max-width: 30rem; margin: 0 auto; padding: 1.1rem; }

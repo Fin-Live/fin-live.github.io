@@ -130,30 +130,20 @@ code { background: var(--panel); padding: .1rem .3rem; border-radius: 4px; }
 
 /* ------------------------------------------------------------- student page
 
-   A dark-first, restrained "fintech" surface (Robinhood-ish, not Cash-App
-   round). Blue is used sparingly, as a highlight. Dark is the default; the
-   palette flips to light only when the phone itself is set to light. Tuned so
-   the answer tiles still sit on the first screen of the smallest phone. */
+   A restrained "fintech" surface (Robinhood-ish, not Cash-App round). Always
+   dark, regardless of the device's OS theme, so every student sees the same
+   look and there is exactly one accent colour. Tuned so the answer tiles still
+   sit on the first screen of the smallest phone. */
 
 body.student {
   padding: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   letter-spacing: -.01em;
-  /* dark palette (default) */
   --bg: #0a0b0d; --panel: #141619; --card-2: #191c21;
   --ink: #f3f4f6; --muted: #868c96;
   --line: rgba(255,255,255,.08); --line-2: rgba(255,255,255,.06);
   --accent: #4d8dff; --accent-ink: #ffffff; --accent-soft: rgba(77,141,255,.14);
   --ok: #41c08a; --warn: #e8a25f; --err: #f28b82; --bar: #4d8dff;
-}
-@media (prefers-color-scheme: light) {
-  body.student {
-    --bg: #f5f6f8; --panel: #ffffff; --card-2: #f2f4f7;
-    --ink: #0b1220; --muted: #667085;
-    --line: #e6e8ec; --line-2: #eef0f3;
-    --accent: #2b6fff; --accent-soft: rgba(43,111,255,.10);
-    --ok: #12b76a; --bar: #2b6fff;
-  }
 }
 
 body.student main { max-width: 30rem; margin: 0 auto; padding: 1.1rem; }
@@ -189,11 +179,11 @@ button.wide { width: 100%; }
 /* Cohesive rounding and elevated input fills, so buttons and fields match the
    card radius instead of the base 8px, and text fields read as real inputs on
    the near-black background. */
-body.student button { border-radius: 12px; }
-body.student input, body.student textarea { border-radius: 12px; background: var(--card-2); }
+body.student button { border-radius: 8px; }
+body.student input, body.student textarea { border-radius: 8px; background: var(--card-2); }
 
 /* card */
-.qcard { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.qcard { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
 
 .qhead { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: 16px; }
 .eyebrow { font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
@@ -205,7 +195,7 @@ body.student input, body.student textarea { border-radius: 12px; background: var
 .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .tiles button {
   background: var(--card-2); color: var(--ink); border: 1px solid var(--line);
-  border-radius: 12px; min-height: 82px; font-size: 1.7rem; font-weight: 600; padding: 0;
+  border-radius: 8px; min-height: 82px; font-size: 1.7rem; font-weight: 600; padding: 0;
   transition: border-color .12s, background .12s, transform .08s;
 }
 .tiles button:active { transform: scale(.97); border-color: var(--accent); background: var(--accent-soft); }
@@ -221,7 +211,7 @@ body.student input, body.student textarea { border-radius: 12px; background: var
 /* recorded confirmation: an elegant check that draws in, then stops */
 .confirm {
   display: flex; flex-direction: column; align-items: center; text-align: center; gap: .25rem;
-  padding: 2.4rem 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: 2.4rem 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
 }
 .recorded-check { width: 60px; height: 60px; margin-bottom: .4rem; }
 .recorded-check .ring { fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: .35; }

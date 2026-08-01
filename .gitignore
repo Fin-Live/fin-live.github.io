@@ -15,4 +15,8 @@ NOTES.md
 # Downloaded exports land here during testing. Student data, never published.
 created files/
 
+# Reference images dropped in for design work — not part of the app.
+Slide-screenshot.png
+*.heic
+
 .DS_Store

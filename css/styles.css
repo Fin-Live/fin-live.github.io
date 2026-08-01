@@ -264,7 +264,19 @@ body.student input, body.student textarea { border-radius: 12px; background: var
    Sized in vw/vh rather than px: the same page has to read from the back of a
    lecture hall on whatever resolution the room's projector happens to be. */
 
-body.display { padding: 0; height: 100vh; overflow: hidden; }
+body.display {
+  padding: 0; height: 100vh; overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -.01em;
+  color: var(--ink);
+  /* Matches the lecture deck: near-black top to navy bottom, so the polling
+     screen reads as part of the presentation. Fixed, not theme-responsive --
+     it must look the same whatever the projector laptop's OS theme is. */
+  background: linear-gradient(180deg, #0a0d14 0%, #16233f 45%, #23416c 100%);
+  --bg: #0f1b33; --panel: #16233f; --ink: #f4f7ff; --muted: #9fb0d0;
+  --line: rgba(255,255,255,.12); --bar: #9fb0d0; --accent: #9fb0d0; --accent-ink: #0a0d14;
+  --warn: #e8a25f; --err: #f28b82;
+}
 
 .login-card { max-width: 26rem; margin: 4rem auto; }
 
@@ -344,12 +356,13 @@ body.display { padding: 0; height: 100vh; overflow: hidden; }
   font-variant-numeric: tabular-nums;
 }
 .dhist-track {
-  background: var(--panel);
-  border-radius: .5vh;
+  background: rgba(255,255,255,.05);
+  border-radius: 2px;
   height: clamp(2rem, 7vh, 5.5rem);
   overflow: hidden;
 }
-.dhist-fill { display: block; background: var(--bar); height: 100%; transition: width .35s ease; }
+.dhist-fill { display: block; background: var(--bar); height: 100%; border-radius: 2px;
+  transition: width .35s ease; }
 .dhist-count {
   font-size: clamp(1.5rem, 4.5vh, 3.5rem);
   font-weight: 700;

@@ -272,7 +272,7 @@ body.display {
   /* Matches the lecture deck: near-black top to navy bottom, so the polling
      screen reads as part of the presentation. Fixed, not theme-responsive --
      it must look the same whatever the projector laptop's OS theme is. */
-  background: linear-gradient(180deg, #0a0d14 0%, #16233f 45%, #23416c 100%);
+  background: linear-gradient(180deg, #0a0d14 0%, #15223c 45%, #1d3557 100%);
   --bg: #0f1b33; --panel: #16233f; --ink: #f4f7ff; --muted: #9fb0d0;
   --line: rgba(255,255,255,.12); --bar: #9fb0d0; --accent: #9fb0d0; --accent-ink: #0a0d14;
   --warn: #e8a25f; --err: #f28b82;
@@ -322,19 +322,12 @@ body.display {
   font-weight: 700;
   margin: 0;
 }
-.countdown-line {
-  font-size: clamp(1.2rem, 2.6vw, 2.2rem);
-  font-weight: 700;
+.stage-sub {
+  font-size: clamp(1.1rem, 2.6vw, 2.2rem);
+  font-weight: 600;
   color: var(--muted);
   margin: 0;
   font-variant-numeric: tabular-nums;
-}
-.countdown-line.low { color: var(--warn); }
-
-.stage-sub {
-  font-size: clamp(1.1rem, 2.6vw, 2.2rem);
-  color: var(--muted);
-  margin: 0;
 }
 .idle-note { margin: auto; }
 

@@ -29,11 +29,9 @@ const el = {
   qtext: $('#qtext'),
   holding: $('#holding'),
   respondNote: $('#respond-note'),
-  countdownLine: $('#countdown-line'),
-  holdingCount: $('#holding-count'),
+  holdingSub: $('#holding-sub'),
   results: $('#results'),
   dhist: $('#dhist'),
-  resultsCount: $('#results-count'),
   idle: $('#idle'),
   fullscreen: $('#fullscreen'),
 };
@@ -127,25 +125,26 @@ function render() {
 
   // Lecture and label as a small eyebrow; the pasted question below it, kept
   // visible in both the holding and revealed states.
-  el.eyebrow.textContent = questionTitle(current);
   el.qtext.textContent = current.text || '';
   show(el.qtext, !!current.text);
 
   if (showResults) {
+    // Response count rides in the eyebrow, so the bars stand alone below.
+    el.eyebrow.textContent = [questionTitle(current), plural(responses.length)]
+      .filter(Boolean).join(' · ');
     drawBars();
-    el.resultsCount.textContent = plural(responses.length);
     return;
   }
 
-  // Holding: how to answer, plus a modest countdown for a timed question (none
-  // for a "stays open" one, which has no meaningful clock).
+  el.eyebrow.textContent = questionTitle(current);
+
+  // Holding: how to answer, then one line — countdown (timed only) and count.
   el.respondNote.textContent = `Answer on your phone — ${siteHost()}`;
   const manual = current.windowSeconds >= MANUAL_WINDOW;
   const left = secondsLeft(clock, current.openedAt, current.windowSeconds);
-  el.countdownLine.textContent = manual ? '' : `${left}s left`;
-  el.countdownLine.classList.toggle('low', !manual && left !== null && left <= 5);
-  show(el.countdownLine, !manual);
-  el.holdingCount.textContent = plural(responses.length);
+  el.holdingSub.textContent = manual
+    ? plural(responses.length)
+    : `${left}s left · ${plural(responses.length)}`;
 }
 
 function drawBars() {

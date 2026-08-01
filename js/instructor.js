@@ -50,6 +50,15 @@ const el = {
   exportStatus: $('#export-status'),
 };
 
+// Populate the Lecture (1–28) and Question (1–30) dropdowns. The dropdown shows
+// just the number, but the stored value is "Lecture N" / "QN" -- so titles read
+// "Lecture 3 — Q1" and the exports stay consistent across the whole term.
+const fillSelect = (sel, n, fmt) => {
+  for (let i = 1; i <= n; i += 1) sel.add(new Option(String(i), fmt(i)));
+};
+fillSelect(el.lecture, 28, (i) => `Lecture ${i}`);
+fillSelect(el.label, 30, (i) => `Q${i}`);
+
 const clock = makeClock();
 let current = null;
 let unsubResponses = null;
@@ -149,10 +158,10 @@ el.launch.addEventListener('click', async () => {
   }
 });
 
-// "Q1" -> "Q2", so re-asking is one click. Anything else is left alone.
+// Advance the Question dropdown to the next number after each launch, so the
+// usual "ask Q1, then Q2, then Q3" flow needs no reselecting. Stops at the last.
 function bumpLabel() {
-  const m = el.label.value.trim().match(/^(.*?)(\d+)\s*:?\s*$/);
-  if (m) el.label.value = `${m[1]}${Number(m[2]) + 1}`;
+  if (el.label.selectedIndex < el.label.options.length - 1) el.label.selectedIndex += 1;
 }
 
 el.closeNow.addEventListener('click', async () => {

@@ -160,7 +160,7 @@ body.student main { max-width: 30rem; margin: 0 auto; padding: 1.1rem; }
 /* Line one all white (course code + subject); the professor line in the muted
    grey used elsewhere, so it sits as a quiet attribution beneath. */
 .brand-dim { font-weight: 450; color: var(--ink); }
-.brand small { display: block; margin-top: 2px; font-weight: 500; font-size: .72rem;
+.brand small { display: block; margin-top: 2px; font-weight: 500; font-size: .9rem;
   color: var(--muted); letter-spacing: 0; }
 .timebar { height: 2px; background: var(--line-2); }
 .timebar > i { display: block; height: 100%; width: 0; background: var(--accent);

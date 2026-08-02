@@ -29,6 +29,7 @@ const el = {
   numOptionsWrap: $('#num-options-wrap'),
   window: $('#window'),
   launch: $('#launch'),
+  startLecture: $('#start-lecture'),
   endLecture: $('#end-lecture'),
   launchStatus: $('#launch-status'),
 
@@ -164,6 +165,20 @@ el.launch.addEventListener('click', async () => {
 function bumpLabel() {
   if (el.label.selectedIndex < el.label.options.length - 1) el.label.selectedIndex += 1;
 }
+
+// Puts the lecture "in session" without a question yet, so students see the
+// in-lecture idle message and can ask in-lecture questions before Q1.
+el.startLecture.addEventListener('click', async () => {
+  el.startLecture.disabled = true;
+  try {
+    await setDoc(doc(db, 'state', 'current'), { started: true });
+    setStatus(el.launchStatus, 'Lecture started — students can ask in-lecture questions.', 'ok');
+  } catch (err) {
+    setStatus(el.launchStatus, `Could not start the lecture: ${err.message}`, 'err');
+  } finally {
+    el.startLecture.disabled = false;
+  }
+});
 
 // Clears the current question so student screens return to "no lecture in
 // session" -- overwrites state/current with a flag doc (no qid), which also

@@ -152,21 +152,27 @@ function render() {
   const showConfirm = hasQ && done;   // the recorded check, only for a live question
   const showIdle = !answering && !showConfirm;
 
+  // A lecture is "in session" once the instructor starts it or launches a
+  // question, and until they end it (a closed question still counts). Only then
+  // can students ask an in-lecture question.
+  const inSession = !!current && (current.started === true || hasQ);
+
   show(el.question, answering);
   show(el.confirm, showConfirm);
   show(el.timebar, answering && !manual);
   show(el.idle, showIdle);
+  show(el.askSection, inSession);
+  if (!inSession) showAskForm(false);
 
   if (showIdle) {
-    // "Between questions" only while a (closed) question is still current;
-    // otherwise the lecture isn't running -- so the check mark never lingers
-    // past the lecture, and the phone reads "no lecture" rather than "recorded".
-    if (hasQ && !open && !done) {
+    if (inSession) {
+      // In lecture, between questions -- the message the instructor likes.
       el.idleTitle.textContent = 'No question right now';
       el.idleSub.textContent = 'Put your phone down — this page keeps itself up to date.';
     } else {
+      // Outside lecture: no instruction about phones, and questions go elsewhere.
       el.idleTitle.textContent = 'No lecture in session';
-      el.idleSub.textContent = 'You can put your phone away.';
+      el.idleSub.textContent = 'Questions outside class go through the Blackboard course site.';
     }
     return;
   }

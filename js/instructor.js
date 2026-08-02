@@ -232,6 +232,13 @@ el.reveal.addEventListener('click', async () => {
 let firstStateSnapshot = true;
 function watchState() {
   onSnapshot(doc(db, 'state', 'current'), (snap) => {
+    // This tab writes state/current, so launching fires an immediate local echo
+    // with openedAt still null (a pending write). Acting on it would set the
+    // question with no server time, and the real server timestamp then arrives
+    // as an "unchanged" snapshot that skips the clock sync -- leaving the
+    // countdown on the laptop's clock, which may be seconds off the server's.
+    // Wait for the server-confirmed snapshot, which carries the real openedAt.
+    if (snap.metadata.hasPendingWrites) return;
     const next = snap.exists() ? snap.data() : null;
     const changed = next?.qid !== current?.qid;
     // Sync the countdown clock only to a question that opens while we're

@@ -312,10 +312,10 @@ body.display {
   white-space: pre-wrap;
   word-break: break-word;
   font-size: clamp(1.4rem, 3.4vw, 3.1rem);
-  font-weight: 600;
-  line-height: 1.25;
+  font-weight: 400;      /* regular, not bold -- reads calmer on a big screen */
+  line-height: 1.5;      /* lines breathe rather than crowd */
   margin: 0;
-  max-height: 40vh;
+  max-height: 48vh;
   overflow: auto;
 }
 
@@ -346,13 +346,14 @@ body.display {
   grid-template-columns: auto 1fr auto;
   gap: 2vh 2vw;
   align-items: center;
+  margin-top: 4vh;       /* clear breathing room between the question and the bars */
 }
 .dhist-row { display: contents; }
 /* Key and percentage match the question text's size and weight, so the letters
    don't shout over the prompt. */
 .dhist-key {
   font-size: clamp(1.4rem, 3.4vw, 3.1rem);
-  font-weight: 600;
+  font-weight: 400;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
@@ -366,7 +367,7 @@ body.display {
   transition: width .35s ease; }
 .dhist-count {
   font-size: clamp(1.3rem, 3.1vw, 2.7rem);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted);
   text-align: right;
   font-variant-numeric: tabular-nums;

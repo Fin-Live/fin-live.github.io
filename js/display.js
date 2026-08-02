@@ -106,7 +106,8 @@ const plural = (n) => `${n} response${n === 1 ? '' : 's'}`;
 const siteHost = () => location.host || 'fin-live.github.io';
 
 function render() {
-  const live = !!current;
+  // An {ended:true} doc has no qid -- treat it as "no live question" (idle).
+  const live = !!current && !!current.qid;
   const open = isOpen(current, clock);
   // The histogram shows once the poll closes, or early if the instructor reveals
   // it (peer instruction). While open and unrevealed the room sees only the

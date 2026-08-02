@@ -45,6 +45,8 @@ const el = {
   anon: $('#anon'),
 
   idle: $('#idle'),
+  idleTitle: $('#idle-title'),
+  idleSub: $('#idle-sub'),
   question: $('#question'),
   title: $('#q-title'),
   countdown: $('#countdown'),
@@ -138,32 +140,46 @@ el.change.addEventListener('click', () => {
 // ---------------------------------------------------------------- rendering
 
 function render() {
-  const open = isOpen(current, clock);
-  const mine = current ? answered.get(current.qid) : undefined;
+  // A real question has a qid. The instructor's "End lecture" writes an
+  // {ended:true} doc with no qid, which reads here as "no lecture".
+  const hasQ = !!current && !!current.qid;
+  const open = hasQ && isOpen(current, clock);
+  const mine = hasQ ? answered.get(current.qid) : undefined;
   const ready = !!identity();
   const done = mine !== undefined;
-  const manual = !!current && current.windowSeconds >= MANUAL_WINDOW;
-  const answering = !!current && open && !done;
+  const manual = hasQ && current.windowSeconds >= MANUAL_WINDOW;
+  const answering = hasQ && open && !done;
+  const showConfirm = hasQ && done;   // the recorded check, only for a live question
+  const showIdle = !answering && !showConfirm;
 
-  // Between questions, and after you have answered, the page holds nothing
-  // worth looking at. That is the whole point.
-  show(el.idle, !current || (!open && !done));
   show(el.question, answering);
-  show(el.confirm, !!current && done);
+  show(el.confirm, showConfirm);
   show(el.timebar, answering && !manual);
+  show(el.idle, showIdle);
 
-  if (!current) return;
+  if (showIdle) {
+    // "Between questions" only while a (closed) question is still current;
+    // otherwise the lecture isn't running -- so the check mark never lingers
+    // past the lecture, and the phone reads "no lecture" rather than "recorded".
+    if (hasQ && !open && !done) {
+      el.idleTitle.textContent = 'No question right now';
+      el.idleSub.textContent = 'Put your phone down — this page keeps itself up to date.';
+    } else {
+      el.idleTitle.textContent = 'No lecture in session';
+      el.idleSub.textContent = 'You can put your phone away.';
+    }
+    return;
+  }
 
-  el.title.textContent = questionTitle(current);
-
-  if (done) {
+  if (showConfirm) {
     el.confirmAnswer.textContent = open
       ? `Your answer · ${mine}`
       : `Your answer · ${mine} — poll closed`;
     return;
   }
-  if (!open) return;
 
+  // answering
+  el.title.textContent = questionTitle(current);
   // A "stays open until I close it" question has no meaningful countdown --
   // show a note instead of a five-figure second count ticking down.
   show(el.countdown, !manual);

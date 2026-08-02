@@ -1,6 +1,6 @@
 import {
   doc, collection, collectionGroup, onSnapshot, getDocs, query, orderBy,
-  writeBatch, updateDoc, serverTimestamp,
+  writeBatch, updateDoc, setDoc, serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 import {
   signInWithEmailAndPassword, signOut, onAuthStateChanged,
@@ -29,6 +29,7 @@ const el = {
   numOptionsWrap: $('#num-options-wrap'),
   window: $('#window'),
   launch: $('#launch'),
+  endLecture: $('#end-lecture'),
   launchStatus: $('#launch-status'),
 
   live: $('#live'),
@@ -164,6 +165,21 @@ function bumpLabel() {
   if (el.label.selectedIndex < el.label.options.length - 1) el.label.selectedIndex += 1;
 }
 
+// Clears the current question so student screens return to "no lecture in
+// session" -- overwrites state/current with a flag doc (no qid), which also
+// removes the lingering "Recorded" check from phones that answered the last one.
+el.endLecture.addEventListener('click', async () => {
+  el.endLecture.disabled = true;
+  try {
+    await setDoc(doc(db, 'state', 'current'), { ended: true });
+    setStatus(el.launchStatus, 'Lecture ended — student screens cleared.', 'ok');
+  } catch (err) {
+    setStatus(el.launchStatus, `Could not end the lecture: ${err.message}`, 'err');
+  } finally {
+    el.endLecture.disabled = false;
+  }
+});
+
 el.closeNow.addEventListener('click', async () => {
   if (!current?.qid) return;
   el.closeNow.disabled = true;
@@ -229,8 +245,10 @@ function watchResponses(qid) {
 }
 
 function renderLive() {
-  show(el.live, !!current);
-  if (!current) return;
+  // An {ended:true} doc has no qid -- treat it as "no live question".
+  const hasQ = !!current && !!current.qid;
+  show(el.live, hasQ);
+  if (!hasQ) return;
 
   const open = isOpen(current, clock);
   el.liveTitle.textContent = questionTitle(current) || '(untitled)';

@@ -157,9 +157,10 @@ body.student main { max-width: 30rem; margin: 0 auto; padding: 1.1rem; }
   padding: 14px 20px 12px; border-bottom: 1px solid var(--line-2); background: var(--bg);
 }
 .brand { font-weight: 600; font-size: 1rem; letter-spacing: -.02em; color: var(--ink); }
-.brand-dim { font-weight: 450; color: var(--muted); }
+/* Uniform colour across the whole header; hierarchy comes from size, not colour. */
+.brand-dim { font-weight: 450; color: var(--ink); }
 .brand small { display: block; margin-top: 2px; font-weight: 500; font-size: .72rem;
-  color: var(--muted); letter-spacing: 0; }
+  color: var(--ink); letter-spacing: 0; }
 .timebar { height: 2px; background: var(--line-2); }
 .timebar > i { display: block; height: 100%; width: 0; background: var(--accent);
   transition: width .5s linear; }

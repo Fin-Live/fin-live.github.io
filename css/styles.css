@@ -188,6 +188,16 @@ button.wide { width: 100%; }
 body.student button { border-radius: 8px; }
 body.student input, body.student textarea { border-radius: 8px; background: var(--card-2); }
 
+/* Focused field: our own light-blue accent, not the browser's default blue
+   ring. Border plus a soft ring so it's clearly the active field. */
+body.student input:focus,
+body.student textarea:focus,
+body.student select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(184, 198, 223, .22);
+}
+
 /* card */
 .qcard { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
 

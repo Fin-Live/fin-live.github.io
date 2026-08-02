@@ -323,11 +323,14 @@ body.display {
 
 /* Readable across a lecture hall, but deliberately not the giant number the
    countdown used to be -- the instruction to answer is the point, not the clock. */
+/* Kept a step smaller than the question, and regular weight, so the call to
+   answer never outshouts the prompt. The URL is the one emphasised part. */
 .respond-note {
-  font-size: clamp(1.5rem, 3.6vw, 3rem);
-  font-weight: 700;
+  font-size: clamp(1.3rem, 3vw, 2.7rem);
+  font-weight: 400;
   margin: 0;
 }
+.respond-url { color: var(--accent); font-weight: 600; }
 .stage-sub {
   font-size: clamp(1.1rem, 2.6vw, 2.2rem);
   font-weight: 600;

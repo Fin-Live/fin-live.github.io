@@ -140,7 +140,13 @@ function render() {
   el.eyebrow.textContent = questionTitle(current);
 
   // Holding: how to answer, then one line — countdown (timed only) and count.
-  el.respondNote.textContent = `Answer on your phone — ${siteHost()}`;
+  // The URL is a coloured span, not joined by a dash, so the hyphens in the
+  // address don't read as punctuation.
+  el.respondNote.textContent = 'Answer on your phone at ';
+  const url = document.createElement('span');
+  url.className = 'respond-url';
+  url.textContent = siteHost();
+  el.respondNote.append(url);
   const manual = current.windowSeconds >= MANUAL_WINDOW;
   const left = secondsLeft(clock, current.openedAt, current.windowSeconds);
   el.holdingSub.textContent = manual

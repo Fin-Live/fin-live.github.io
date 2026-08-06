@@ -55,6 +55,8 @@ b) a growth rate"></textarea>
           <select id="type">
             <option value="choice">Multiple choice</option>
             <option value="numeric">Numeric</option>
+            <option value="word">Short answer (word cloud)</option>
+            <option value="text">Open response (text)</option>
           </select>
         </div>
         <div class="grow" id="num-options-wrap">
@@ -97,16 +99,19 @@ b) a growth rate"></textarea>
       <p id="live-qtext" class="qtext-preview" hidden></p>
       <div class="row" style="margin-top:.5rem">
         <button id="close-now" class="secondary" type="button">Close now</button>
-        <button id="reveal" type="button">Reveal histogram to room</button>
+        <button id="reveal" type="button">Reveal to room</button>
+        <button id="next-answers" class="secondary" type="button" hidden>Next answers ›</button>
         <span class="muted"><strong id="total">0</strong> responses ·
           <strong id="identified">0</strong> with a code</span>
       </div>
       <p id="reveal-state" class="muted"></p>
       <div id="hist" class="hist"></div>
-      <p class="muted">This histogram is yours alone. The question prompt is
-        always on <a href="display.html" target="_blank">the projector view</a>;
-        the room sees these bars only when you close the poll — or earlier if you
-        reveal them.</p>
+      <div id="answers" class="answers" hidden></div>
+      <p class="muted">This panel is yours alone. The question prompt is always on
+        <a href="display.html" target="_blank">the projector view</a>. Multiple
+        choice and numeric results show to the room on close; word and text
+        results only when you <strong>Reveal</strong>, so you can read them here
+        first. For text, <strong>Next answers</strong> pages the projector.</p>
     </section>
 
     <section class="panel">

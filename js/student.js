@@ -55,6 +55,12 @@ const el = {
   numeric: $('#numeric'),
   numericValue: $('#numeric-value'),
   numericSubmit: $('#numeric-submit'),
+  word: $('#word'),
+  wordValue: $('#word-value'),
+  wordSubmit: $('#word-submit'),
+  text: $('#text'),
+  textValue: $('#text-value'),
+  textSubmit: $('#text-submit'),
   answerStatus: $('#answer-status'),
 
   confirm: $('#confirm'),
@@ -191,9 +197,13 @@ function render() {
   show(el.countdown, !manual);
   show(el.timingNote, manual);
 
-  if (current.type === 'choice') {
-    show(el.choices, true);
-    show(el.numeric, false);
+  const type = current.type;
+  show(el.choices, type === 'choice');
+  show(el.numeric, type === 'numeric');
+  show(el.word, type === 'word');
+  show(el.text, type === 'text');
+
+  if (type === 'choice') {
     if (el.choices.dataset.qid !== current.qid) {
       el.choices.dataset.qid = current.qid;
       el.choices.innerHTML = '';
@@ -206,11 +216,15 @@ function render() {
       }
     }
     for (const b of el.choices.children) b.disabled = !ready;
-  } else {
-    show(el.choices, false);
-    show(el.numeric, true);
+  } else if (type === 'numeric') {
     el.numericValue.disabled = !ready;
     el.numericSubmit.disabled = !ready;
+  } else if (type === 'word') {
+    el.wordValue.disabled = !ready;
+    el.wordSubmit.disabled = !ready;
+  } else {
+    el.textValue.disabled = !ready;
+    el.textSubmit.disabled = !ready;
   }
 
   setStatus(el.answerStatus,
@@ -235,10 +249,21 @@ async function submitAnswer(rawAnswer) {
   const who = identity();
   if (!who || !current) return;
 
-  const answer = current.type === 'numeric' ? Number(rawAnswer) : rawAnswer;
-  if (current.type === 'numeric' && !Number.isFinite(answer)) {
-    setStatus(el.answerStatus, 'Enter a number.', 'err');
-    return;
+  let answer;
+  if (current.type === 'numeric') {
+    answer = Number(rawAnswer);
+    if (!Number.isFinite(answer)) {
+      setStatus(el.answerStatus, 'Enter a number.', 'err');
+      return;
+    }
+  } else if (current.type === 'word' || current.type === 'text') {
+    answer = String(rawAnswer).trim();
+    if (!answer) {
+      setStatus(el.answerStatus, 'Type an answer first.', 'err');
+      return;
+    }
+  } else {
+    answer = rawAnswer;  // multiple-choice letter
   }
 
   setStatus(el.answerStatus, 'Sending…', '');
@@ -261,6 +286,8 @@ async function submitAnswer(rawAnswer) {
     await batch.commit();
     remember(qid, answer);
     el.numericValue.value = '';
+    el.wordValue.value = '';
+    el.textValue.value = '';
     setStatus(el.answerStatus, '', '');
     render();
   } catch (err) {
@@ -287,6 +314,15 @@ function explain(err, who) {
 el.numericSubmit.addEventListener('click', () => submitAnswer(el.numericValue.value));
 el.numericValue.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') submitAnswer(el.numericValue.value);
+});
+el.wordSubmit.addEventListener('click', () => submitAnswer(el.wordValue.value));
+el.wordValue.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitAnswer(el.wordValue.value);
+});
+el.textSubmit.addEventListener('click', () => submitAnswer(el.textValue.value));
+el.textValue.addEventListener('keydown', (e) => {
+  // Enter makes a newline in a sentence; Cmd/Ctrl+Enter sends.
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submitAnswer(el.textValue.value);
 });
 
 // ------------------------------------------------------- asking a question

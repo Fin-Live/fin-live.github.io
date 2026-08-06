@@ -44,10 +44,17 @@
     <p id="holding-sub" class="stage-sub"></p>
   </section>
 
-  <!-- Results: the response count rides in the eyebrow above, so the bars stand
-       alone with nothing beneath them. -->
+  <!-- Results: the response count rides in the eyebrow above. Which one shows
+       depends on the question type. -->
   <section id="results" class="results-wrap" hidden>
     <div id="dhist" class="dhist"></div>
+    <!-- The SVG is wrapped in a sized div; an <svg> as a direct flex item
+         collapses to 0x0 in some browsers. -->
+    <div id="cloud-wrap" class="cloud-wrap" hidden>
+      <svg id="cloud" class="cloud" viewBox="0 0 1280 620" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div id="cards" class="cards" hidden></div>
+    <p id="cards-more" class="stage-sub cards-more" hidden></p>
   </section>
 
   <p id="idle" class="stage-sub idle-note" hidden>Waiting for the next question</p>

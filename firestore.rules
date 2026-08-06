@@ -91,7 +91,7 @@ service cloud.firestore {
       // An answer is a short choice string ("A".."E") or a number. Bounding it
       // stops a student bloating their own document or smuggling a structure in.
       function validAnswer(a) {
-        return (a is string && a.size() <= 100) || a is int || a is float;
+        return (a is string && a.size() <= 280) || a is int || a is float;
       }
 
       match /responses/{key} {

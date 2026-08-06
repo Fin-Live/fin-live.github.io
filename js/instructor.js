@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword, signOut, onAuthStateChanged,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {
-  db, auth, MANUAL_WINDOW, $, show, setStatus, tallyBins,
+  db, auth, MANUAL_WINDOW, $, show, setStatus, tallyBins, wordCounts, textAnswers,
   makeClock, secondsLeft, isOpen, questionTitle, downloadCsv, fmtTimestamp,
 } from './common.js';
 import { INSTRUCTOR_UID } from './config.js';
@@ -39,10 +39,12 @@ const el = {
   countdown: $('#countdown'),
   closeNow: $('#close-now'),
   reveal: $('#reveal'),
+  nextAnswers: $('#next-answers'),
   revealState: $('#reveal-state'),
   total: $('#total'),
   identified: $('#identified'),
   hist: $('#hist'),
+  answers: $('#answers'),
 
   feed: $('#feed'),
   exportBtn: $('#export'),
@@ -273,22 +275,28 @@ function renderLive() {
   if (!hasQ) return;
 
   const open = isOpen(current, clock);
+  const type = current.type;
+  const freeText = type === 'word' || type === 'text';   // word cloud / text answers
   el.liveTitle.textContent = questionTitle(current) || '(untitled)';
   el.liveQtext.textContent = current.text || '';
   show(el.liveQtext, !!current.text);
   el.closeNow.disabled = !open;
 
-  // The room sees the histogram once the poll closes, or early if you reveal it.
-  // The question prompt is always on the projector; this only controls the bars.
-  const roomSeesHistogram = current.revealed || !open;
-  el.reveal.textContent = current.revealed ? 'Hide histogram from room' : 'Reveal histogram to room';
-  el.reveal.disabled = !open; // once closed, the histogram shows on its own
-  el.revealState.textContent = !open
-    ? 'Poll closed — the room can see the histogram.'
-    : current.revealed
-      ? 'The room can see the histogram.'
-      : 'Room sees the prompt and a response count. Close the poll (or reveal) to show the histogram.';
-  el.revealState.className = roomSeesHistogram ? 'muted revealed' : 'muted';
+  // Choice/numeric results reach the room on close (or reveal). Word/text only
+  // on an explicit reveal, so the reveal button stays usable after closing them.
+  const roomSeesResults = current.revealed || (!freeText && !open);
+  el.reveal.textContent = current.revealed ? 'Hide from room' : 'Reveal to room';
+  el.reveal.disabled = freeText ? false : !open;
+  el.revealState.textContent = roomSeesResults
+    ? 'The room can see the results.'
+    : freeText
+      ? 'Read the answers below; Reveal when you’re ready to show the room.'
+      : 'Room sees the prompt and a response count. Close the poll (or reveal) to show it.';
+  el.revealState.className = roomSeesResults ? 'muted revealed' : 'muted';
+
+  // "Next answers" pages the projector through text responses, once revealed.
+  show(el.nextAnswers, type === 'text' && !!current.revealed && responses.length > 9);
+
   el.total.textContent = String(responses.length);
   el.identified.textContent = String(responses.filter((r) => r.studentCode).length);
 
@@ -304,7 +312,10 @@ function renderLive() {
     el.countdown.classList.toggle('low', left <= 5);
   }
 
-  drawHistogram();
+  // Choice/numeric -> histogram; word/text -> the answers list (for vetting).
+  show(el.hist, !freeText);
+  show(el.answers, freeText);
+  if (freeText) drawAnswers(); else drawHistogram();
 }
 
 setInterval(() => { if (current) renderLive(); }, 500);
@@ -327,6 +338,42 @@ function drawHistogram() {
     el.hist.appendChild(row);
   }
 }
+
+// The instructor's private view of free-text answers: word -> "answer × count"
+// (sorted), text -> every response in full, so you can read them before reveal.
+function drawAnswers() {
+  el.answers.innerHTML = '';
+  if (current.type === 'word') {
+    for (const w of wordCounts(responses)) {
+      const row = document.createElement('div');
+      row.className = 'answer-row';
+      const text = document.createElement('span');
+      text.textContent = w.text;
+      const count = document.createElement('span');
+      count.className = 'answer-count';
+      count.textContent = String(w.count);
+      row.append(text, count);
+      el.answers.appendChild(row);
+    }
+  } else {
+    for (const t of textAnswers(responses)) {
+      const card = document.createElement('div');
+      card.className = 'answer-card';
+      card.textContent = t;
+      el.answers.appendChild(card);
+    }
+  }
+}
+
+// Page the projector through text answers; the display wraps around.
+el.nextAnswers.addEventListener('click', async () => {
+  if (!current?.qid) return;
+  try {
+    await updateDoc(doc(db, 'state', 'current'), { page: (Number(current.page) || 0) + 1 });
+  } catch (err) {
+    setStatus(el.launchStatus, `Could not page: ${err.message}`, 'err');
+  }
+});
 
 // ------------------------------------------------------ student questions
 

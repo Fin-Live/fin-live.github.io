@@ -97,6 +97,38 @@ function numericBins(responses, binCount) {
   });
 }
 
+// Groups free-text (word) answers case-insensitively and returns
+// [{text, count}] sorted by count desc. `text` is the most common original
+// casing, so "YTM" survives rather than becoming "ytm".
+export function wordCounts(responses) {
+  const groups = new Map(); // lowercased key -> { count, casings: Map }
+  for (const r of responses) {
+    const raw = (r.answer == null ? '' : String(r.answer)).trim();
+    if (!raw) continue;
+    const key = raw.toLowerCase();
+    const g = groups.get(key) || { count: 0, casings: new Map() };
+    g.count += 1;
+    g.casings.set(raw, (g.casings.get(raw) || 0) + 1);
+    groups.set(key, g);
+  }
+  const out = [];
+  for (const g of groups.values()) {
+    let best = '', bestN = -1;
+    for (const [c, n] of g.casings) if (n > bestN) { best = c; bestN = n; }
+    out.push({ text: best, count: g.count });
+  }
+  return out.sort((a, b) => b.count - a.count || a.text.localeCompare(b.text));
+}
+
+// Non-empty text answers, newest first.
+export function textAnswers(responses) {
+  return responses
+    .slice()
+    .sort((a, b) => (b.submittedAt?.toMillis?.() || 0) - (a.submittedAt?.toMillis?.() || 0))
+    .map((r) => (r.answer == null ? '' : String(r.answer)).trim())
+    .filter(Boolean);
+}
+
 export function downloadCsv(filename, rows) {
   const escape = (v) => {
     let s = v === null || v === undefined ? '' : String(v);
